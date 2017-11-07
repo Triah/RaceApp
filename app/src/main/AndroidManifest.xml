@@ -23,7 +23,15 @@
             </intent-filter>
         </activity>
 
+
+        <service
+            android:name=".GpsLocationListener"
+            android:enabled="true"
+            android:exported="true"></service>
+
+
         <service android:name=".RecognizedActivityService"/>
+
     </application>
 
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
