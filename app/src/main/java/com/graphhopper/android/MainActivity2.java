@@ -1,33 +1,27 @@
-package case1.groupg.raceapp;
-
+package com.graphhopper.android;
+/*
 import android.Manifest;
 import android.app.Activity;
-
-import android.content.ComponentName;
-import android.content.DialogInterface;
-import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.os.IBinder;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Toast;
-
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-import android.widget.TextView;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -40,7 +34,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+public class MainActivity2 extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     public GoogleApiClient apiClient;
     private static int LOCATION_PERMISSION = 2;
@@ -202,3 +196,4 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
 }
+*/

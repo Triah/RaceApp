@@ -1,5 +1,5 @@
-package case1.groupg.raceapp;
-
+package com.graphhopper.android;
+/*
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -81,3 +81,4 @@ public class RecognizedActivityService extends IntentService {
         lbm.sendBroadcast(intent);
     }
 }
+*/
