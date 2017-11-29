@@ -13,6 +13,7 @@ import com.google.android.gms.location.DetectedActivity;
 import java.util.List;
 
 public class RecognizedActivityService extends IntentService {
+
     public RecognizedActivityService() {
         super("RecognizedActivityService");
     }

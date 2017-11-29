@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -40,6 +41,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     public GoogleApiClient apiClient;
@@ -52,6 +56,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     IMapController mapController;
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_ID = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_ID";
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_TEXT = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_TEXT";
+    private Timer timer;
 
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -95,7 +100,32 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         intentFilter.addAction(BROADCAST_RECOGNIZED_ACTIVITY_ID);
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(broadcastReceiver, intentFilter);
+
+        //time the calls for the updating of position
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        }, 0, 1000);
     }
+
+    public void updateLocation(){
+        this.runOnUiThread(timerTick);
+    }
+
+    private Runnable timerTick = new Runnable() {
+        @Override
+        public void run() {
+            if(mBound){
+                latitude = mService.getLatitude();
+                longitude = mService.getLongitude();
+                mapController.setCenter(new GeoPoint(latitude, longitude));
+                mapController.setZoom(17);
+            }
+        }
+    };
 
     @Override
     public void onResume(){
@@ -151,16 +181,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         if(mBound){
             unbindService(mConnection);
             mBound = false;
-        }
-    }
-
-    public void locationSync(View v){
-        if(mBound){
-            latitude = mService.getLatitude();
-            longitude = mService.getLongitude();
-            mapController.setCenter(new GeoPoint(latitude, longitude));
-            mapController.setZoom(17);
-
         }
     }
 

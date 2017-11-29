@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "954940811973",
+    "firebase_url": "https://raceapp-c5e4c.firebaseio.com",
+    "project_id": "raceapp-c5e4c",
+    "storage_bucket": "raceapp-c5e4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954940811973:android:c29ace57b1dafeb3",
+        "android_client_info": {
+          "package_name": "case1.groupg.raceapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954940811973-m7m2228l2sb4vuj70847uft9s5nhu5nd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "case1.groupg.raceapp",
+            "certificate_hash": "ea3c4e65740a9f196a1a1527e80fb37fcc292297"
+          }
+        },
+        {
+          "client_id": "954940811973-1jhh5hpt8ehmn6innlgpmsqdf81ialsu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSvvKlq03W4_eHYPcfmrQJmLso6-1av6o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954940811973-1jhh5hpt8ehmn6innlgpmsqdf81ialsu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
