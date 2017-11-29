@@ -1,4 +1,5 @@
-package case1.groupg.raceapp;
+package com.graphhopper.android;
+
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,7 +16,6 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.widget.Toast;
 
-import org.osmdroid.util.GeoPoint;
 
 /**
  * Created by Nicolai on 05-11-2017.
