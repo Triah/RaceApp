@@ -50,6 +50,12 @@ public class RegisterUserActivity extends Activity {
                     User newUser = new User(userID, registerUsername.getText().toString(), registerEmail.getText().toString(), registerPassword.getText().toString());
                     databaseReference.child(userID).setValue(newUser);
 
+
+                    /**
+                     * redirect to login screen here
+                     */
+
+
                     //going to add more rules here, i have done this before so i have a pretty good idea of how to cover all bases
                     // -Nicolai
                 } else if(registerUsername.getText().toString().equals("")){
