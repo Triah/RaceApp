@@ -1,4 +1,4 @@
-package com.graphhopper.android;
+package case1.groupg.raceapp;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

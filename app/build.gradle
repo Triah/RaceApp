@@ -5,8 +5,8 @@ android {
     buildToolsVersion "27.0.0"
 
     defaultConfig {
-        applicationId "com.graphhopper.android"
-        minSdkVersion 10
+        applicationId "case1.groupg.raceapp"
+        minSdkVersion 19
         targetSdkVersion 22
     }
 
@@ -54,4 +54,15 @@ dependencies {
 
     implementation 'org.slf4j:slf4j-api:1.7.25'
     implementation 'org.slf4j:slf4j-android:1.7.25'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'org.osmdroid:osmdroid-android:5.6.5'
+    compile 'com.google.android.gms:play-services:10.0.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
+    testCompile 'junit:junit:4.12'
 }
