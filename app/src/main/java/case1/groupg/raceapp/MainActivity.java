@@ -1,7 +1,26 @@
 package case1.groupg.raceapp;
 
 import android.app.Activity;
+
+
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.IBinder;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
+
+import android.app.PendingIntent;
+
 import android.app.ProgressDialog;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +78,9 @@ import org.oscim.theme.VtmThemes;
 import org.oscim.tiling.source.mapfile.MapFileTileSource;
 import org.osmdroid.api.IMapController;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -67,7 +89,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private static final int NEW_MENU_ID = Menu.FIRST + 1;
     private MapView mapView;
@@ -98,6 +121,7 @@ public class MainActivity extends Activity {
     IMapController mapController;
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_ID = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_ID";
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_TEXT = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_TEXT";
+    private Timer timer;
 
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -180,6 +204,41 @@ public class MainActivity extends Activity {
         //final EditText input = new EditText(this);
         //input.setText(currentArea);
 
+
+  /*
+        //broadcast receiver to get recognized activity from service
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BROADCAST_RECOGNIZED_ACTIVITY_ID);
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.registerReceiver(broadcastReceiver, intentFilter);
+
+        //time the calls for the updating of position
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        }, 0, 1000);
+    }
+
+    public void updateLocation(){
+        this.runOnUiThread(timerTick);
+    }
+
+    private Runnable timerTick = new Runnable() {
+        @Override
+        public void run() {
+            if(mBound){
+                latitude = mService.getLatitude();
+                longitude = mService.getLongitude();
+                mapController.setCenter(new GeoPoint(latitude, longitude));
+                mapController.setZoom(17);
+            }
+        }
+    };
+*/
+
         /**
          * check to see if the phone is at or above sdk 19
          * not sure if it can run on 19 at all
@@ -230,6 +289,7 @@ public class MainActivity extends Activity {
     /**
      * resumes the map and app
      */
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -263,6 +323,16 @@ public class MainActivity extends Activity {
         // Cleanup VTM
         mapView.map().destroy();
     }
+
+
+  /*
+    private void showAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "use this app")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                */
 
     /**
      * custom bool method which checks if the api is loaded yet
@@ -316,6 +386,7 @@ public class MainActivity extends Activity {
         //this must be to increase the seamlessnes
         chooseArea(localButton, localSpinner, nameList,
                 new MySpinnerListener() {
+
                     @Override
                     public void onSelect(String selectedArea, String selectedFile) {
                         initFiles(selectedArea);
