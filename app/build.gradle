@@ -8,6 +8,7 @@ android {
         applicationId "case1.groupg.raceapp"
         minSdkVersion 19
         targetSdkVersion 22
+        multiDexEnabled true
     }
 
     buildTypes {
