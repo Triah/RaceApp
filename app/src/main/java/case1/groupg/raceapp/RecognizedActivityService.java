@@ -1,5 +1,5 @@
 package case1.groupg.raceapp;
-
+/*
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -82,3 +82,4 @@ public class RecognizedActivityService extends IntentService {
         lbm.sendBroadcast(intent);
     }
 }
+*/

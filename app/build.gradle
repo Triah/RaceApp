@@ -1,25 +1,60 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.0"
+
     defaultConfig {
         applicationId "case1.groupg.raceapp"
-        minSdkVersion 23
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 19
+        targetSdkVersion 22
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+
+    lintOptions {
+        /* CGIARProvider refers to java.awt
+         * Helper7 refers to java.lang.management
+         * HeightTile refers to javax.imageio and java.awt
+         * OSMElement refers to javax.xml.stream
+         */
+        disable 'InvalidPackage'
     }
 }
 
+/** only necessary if you need to use latest SNAPSHOT
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+ **/
+
 dependencies {
+    implementation(group: 'com.graphhopper', name: 'graphhopper-core', version: '0.10-SNAPSHOT') {
+       exclude group: 'com.google.protobuf', module: 'protobuf-java'
+       exclude group: 'org.openstreetmap.osmosis', module: 'osmosis-osm-binary'
+       exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
+    }
+
+    implementation 'org.mapsforge:vtm:0.8.0'
+    implementation 'org.mapsforge:vtm-android:0.8.0'
+    implementation 'org.mapsforge:vtm-android:0.8.0:natives-armeabi'
+    implementation 'org.mapsforge:vtm-android:0.8.0:natives-armeabi-v7a'
+    implementation 'org.mapsforge:vtm-android:0.8.0:natives-x86'
+    implementation('org.mapsforge:vtm-jts:0.8.0') {
+        exclude group: 'com.vividsolutions', module: 'jts-core'
+    }
+    implementation 'org.mapsforge:vtm-themes:0.8.0'
+    implementation 'com.caverock:androidsvg:1.2.2-beta-1'
+
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-android:1.7.25'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
