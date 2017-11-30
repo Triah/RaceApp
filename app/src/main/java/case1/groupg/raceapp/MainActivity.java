@@ -1,5 +1,6 @@
 package case1.groupg.raceapp;
 
+import android.*;
 import android.app.Activity;
 
 
@@ -10,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -44,7 +47,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
@@ -291,11 +296,27 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
      */
 
     @Override
+    protected void onStart(){
+        super.onStart();
+        Intent intent = new Intent(this, GpsLocationListener.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
 
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if(mBound){
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
     /**
      * pauses the map and application
@@ -325,6 +346,71 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
 
+    private void doPermissions() {
+        // If we haven't been granted the permission to use "fine location"
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION);
+            }
+        }
+    }
+
+    private void showAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "use this app")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
+    public void onConnected(@Nullable Bundle bundle) {
+        /*Intent intent = new Intent(this, RecognizedActivityService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(apiClient, 1000, pendingIntent);*/
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(getApplicationContext(), "Connection to apiClient suspended :(", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service){
+            GpsLocationListener.GetLocationBinder locationService = (GpsLocationListener.GetLocationBinder) service;
+            mService = locationService.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0){
+            mBound = false;
+        }
+    };
   /*
     private void showAlert() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
