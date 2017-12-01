@@ -41,6 +41,8 @@ public class RegisterUserActivity extends Activity {
 
         usersList = new ArrayList<>();
 
+        queryDataFromFireBase();
+
         registerErrorMessage = (TextView) findViewById(R.id.registerErrorMessage);
         registerUsername = (EditText) findViewById(R.id.registerUsername);
         registerEmail = (EditText) findViewById(R.id.registerEmail);

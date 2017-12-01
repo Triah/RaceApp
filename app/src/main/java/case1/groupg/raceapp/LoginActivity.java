@@ -38,6 +38,7 @@ public class LoginActivity extends Activity{
         setContentView(R.layout.login_screen);
 
         usersList = new ArrayList<>();
+        queryDataFromFireBase();
 
         username = (EditText) findViewById(R.id.usernameText);
         password = (EditText) findViewById(R.id.passwordText);

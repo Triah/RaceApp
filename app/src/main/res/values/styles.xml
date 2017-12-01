@@ -1,5 +1,12 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="AppTheme" parent="Theme.AppCompat.Light"></style>
+    <!--<style name="AppTheme" parent="android:Theme.Light" />-->
+
+    <style name="HighScoresTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">true</item>
+    </style>
+
 
 </resources>
