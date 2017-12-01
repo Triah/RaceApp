@@ -128,6 +128,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_TEXT = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_TEXT";
     private Timer timer;
 
+    public static User player = null; // The user, who is logged in, and plays the game
+
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
