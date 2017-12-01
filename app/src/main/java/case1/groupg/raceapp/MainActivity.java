@@ -6,6 +6,7 @@ import android.app.Activity;
 
 import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -15,14 +16,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.Toast;
 
 import android.app.PendingIntent;
-
-import android.app.ProgressDialog;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,10 +40,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -54,19 +49,18 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.PathWrapper;
+import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.Constants;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.Parameters.Algorithms;
 import com.graphhopper.util.Parameters.Routing;
 import com.graphhopper.util.PointList;
-import com.graphhopper.util.ProgressListener;
 import com.graphhopper.util.StopWatch;
 
 import org.oscim.android.MapView;
 import org.oscim.android.canvas.AndroidGraphics;
 import org.oscim.backend.canvas.Bitmap;
 import org.oscim.core.GeoPoint;
-import org.oscim.core.Tile;
 import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.event.MotionEvent;
@@ -84,7 +78,6 @@ import org.oscim.tiling.source.mapfile.MapFileTileSource;
 import org.osmdroid.api.IMapController;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -104,14 +97,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private GeoPoint end;
     private Spinner localSpinner;
     private Button localButton;
-    private Spinner remoteSpinner;
-    private Button remoteButton;
     private volatile boolean prepareInProgress = false;
     private volatile boolean shortestPathRunning = false;
-    private String currentArea = "berlin"; //not sure if this is actually needed because i can change it with no effect
-    private String fileListURL = "http://download2.graphhopper.com/public/maps/" + Constants.getMajorVersion() + "/"; //getting the remote files
-    private String prefixURL = fileListURL;
-    private String downloadURL;
+    private String currentArea = "odense"; //not sure if this is actually needed because i can change it with no effect
     private File mapsFolder;
     private ItemizedLayer<MarkerItem> itemizedLayer;
     private PathLayer pathLayer;
@@ -151,6 +139,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
      *
      * not quite sure what the removal of the pathLayer does.
      * but basically this is the bread and butter of the logic
+     *
+     *
+     *
+     * TODO: Refactor this method such that instead of using long presses it uses adresses, no clue how this works yet though
+     * TODO: Probably works with sending the adresses with an intent from an earlier screen and getting the lat,lngs from these
      * @param p
      * @return
      */
@@ -187,6 +180,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        doPermissions();
         //this leaves out the map untill it has been chosen i believe
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -194,60 +188,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        /**
-         * likely for removal
-         */
-        //Tile.SIZE = Tile.calculateTileSize(getResources().getDisplayMetrics().scaledDensity);
-
-
         mapView = new MapView(this);
 
 
-        /**
-         * likely for removal
-         */
-        //final EditText input = new EditText(this);
-        //input.setText(currentArea);
-
-
-  /*
         //broadcast receiver to get recognized activity from service
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_RECOGNIZED_ACTIVITY_ID);
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(broadcastReceiver, intentFilter);
 
-        //time the calls for the updating of position
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                updateLocation();
-            }
-        }, 0, 1000);
-    }
-
-    public void updateLocation(){
-        this.runOnUiThread(timerTick);
-    }
-
-    private Runnable timerTick = new Runnable() {
-        @Override
-        public void run() {
-            if(mBound){
-                latitude = mService.getLatitude();
-                longitude = mService.getLongitude();
-                mapController.setCenter(new GeoPoint(latitude, longitude));
-                mapController.setZoom(17);
-            }
-        }
-    };
-*/
-
-        /**
-         * check to see if the phone is at or above sdk 19
-         * not sure if it can run on 19 at all
-         */
         if (Build.VERSION.SDK_INT >= 19) {
             //check for avaliable memory this is most likely for the map
             if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -265,31 +214,47 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         if (!mapsFolder.exists())
             mapsFolder.mkdirs();
 
-        //pointless welcome message, candidate for deletion
-        /*TextView welcome = (TextView) findViewById(R.id.welcome);
-        welcome.setText("Welcome to GraphHopper " + Constants.VERSION + "!");
-        welcome.setPadding(6, 3, 3, 3);*/
-
         /**
          * these are the spinners and buttons used to select the map
+         * gotta change this to always be denmark
          */
         localSpinner = (Spinner) findViewById(R.id.locale_area_spinner);
         localButton = (Button) findViewById(R.id.locale_button);
-        remoteSpinner = (Spinner) findViewById(R.id.remote_area_spinner);
-        remoteButton = (Button) findViewById(R.id.remote_button);
-
-        /**
-         * not quite sure what this to do is here for xD
-         */
-        // TODO get user confirmation to download
-        // if (AndroidHelper.isFastDownload(this))
-
-        //the async task which fetches the map files and stores them in the folder specified earlier
-        chooseAreaFromRemote();
 
         //executes the fetching of the files which have been downloaded already
+        //TODO: This must be refactored to just initialize the map instead of choosing it
         chooseAreaFromLocal();
+
+        /**
+         * this needs to be reworked for the new location stuff
+         * TODO: Find the proper way to set the user lat, lng as the starting point -- commented out for now
+         */
+        /*
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        }, 0, 1000);
+    */}
+
+/*
+    public void updateLocation(){
+        this.runOnUiThread(timerTick);
     }
+
+    private Runnable timerTick = new Runnable() {
+        @Override
+        public void run() {
+            if(mBound){
+                latitude = mService.getLatitude();
+                longitude = mService.getLongitude();
+            }
+        }
+    };
+*/
+
 
     /**
      * resumes the map and app
@@ -338,10 +303,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             hopper.close();
 
         hopper = null;
-        // necessary?
         System.gc();
 
-        // Cleanup VTM
         mapView.map().destroy();
     }
 
@@ -362,30 +325,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     }
 
-    private void showAlert() {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Location")
-                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
-                        "use this app")
-                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    }
-                });
-        dialog.show();
-    }
-
     public void onConnected(@Nullable Bundle bundle) {
-        /*Intent intent = new Intent(this, RecognizedActivityService.class);
+        Intent intent = new Intent(this, RecognizedActivityService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(apiClient, 1000, pendingIntent);*/
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(apiClient, 1000, pendingIntent);
     }
 
     @Override
@@ -411,14 +354,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             mBound = false;
         }
     };
-  /*
-    private void showAlert() {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Location")
-                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
-                        "use this app")
-                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
-                */
 
     /**
      * custom bool method which checks if the api is loaded yet
@@ -475,69 +410,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
                     @Override
                     public void onSelect(String selectedArea, String selectedFile) {
-                        initFiles(selectedArea);
+                    initFiles(selectedArea);
                     }
                 });
     }
 
-    /**
-     * async task which uses the downloader to fetch the list of files and download them to the device
-     * most of it is error securing stuff, like no network connection and no avalailable maps
-     */
-    private void chooseAreaFromRemote() {
-        new GHAsyncTask<Void, Void, List<String>>() {
-            protected List<String> saveDoInBackground(Void... params)
-                    throws Exception {
-                String[] lines = new AndroidDownloader().downloadAsString(fileListURL, false).split("\n");
-                List<String> res = new ArrayList<>();
-                for (String str : lines) {
-                    int index = str.indexOf("href=\"");
-                    if (index >= 0) {
-                        index += 6;
-                        int lastIndex = str.indexOf(".ghz", index);
-                        if (lastIndex >= 0)
-                            res.add(prefixURL + str.substring(index, lastIndex)
-                                    + ".ghz");
-                    }
-                }
-
-                return res;
-            }
-
-            @Override
-            protected void onPostExecute(List<String> nameList) {
-                if (hasError()) {
-                    getError().printStackTrace();
-                    logUser("Are you connected to the internet? Problem while fetching remote area list: "
-                            + getErrorMessage());
-                    return;
-                } else if (nameList == null || nameList.isEmpty()) {
-                    logUser("No maps created for your version!? " + fileListURL);
-                    return;
-                }
-
-                MySpinnerListener spinnerListener = new MySpinnerListener() {
-                    @Override
-                    public void onSelect(String selectedArea, String selectedFile) {
-                        if (selectedFile == null
-                                || new File(mapsFolder, selectedArea + ".ghz").exists()
-                                || new File(mapsFolder, selectedArea + "-gh").exists()) {
-                            downloadURL = null;
-                        } else {
-                            downloadURL = selectedFile;
-                        }
-                        initFiles(selectedArea);
-                    }
-                };
-                chooseArea(remoteButton, remoteSpinner, nameList,
-                        spinnerListener);
-            }
-        }.execute();
-    }
 
     /**
      * used by the async task above to lock in the area which should be downloaded i believe
      * download begins as the spinner selects something
+     * TODO: This is the method to refactor for the setting of the map right away i think
      * @param button
      * @param spinner
      * @param nameList
@@ -573,60 +455,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         });
     }
 
-    //this is used to download or load the map if the download url isnt there or the folder already exists
+    //load the map
+    //TODO: Rename this to something more sensible
     void downloadingFiles() {
         final File areaFolder = new File(mapsFolder, currentArea + "-gh");
-        if (downloadURL == null || areaFolder.exists()) {
-            loadMap(areaFolder);
-            return;
-        }
-
-        //dialog showing the current progress of a download
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Downloading and uncompressing " + downloadURL);
-        dialog.setIndeterminate(false);
-        dialog.setMax(100);
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.show();
-
-        //more async work for downloading map
-        new GHAsyncTask<Void, Integer, Object>() {
-            protected Object saveDoInBackground(Void... _ignore)
-                    throws Exception {
-                String localFolder = Helper.pruneFileEnd(AndroidHelper.getFileName(downloadURL));
-                localFolder = new File(mapsFolder, localFolder + "-gh").getAbsolutePath();
-                log("downloading & unzipping " + downloadURL + " to " + localFolder);
-                AndroidDownloader downloader = new AndroidDownloader();
-                downloader.setTimeout(30000);
-                downloader.downloadAndUnzip(downloadURL, localFolder,
-                        new ProgressListener() {
-                            @Override
-                            public void update(long val) {
-                                publishProgress((int) val);
-                            }
-                        });
-                return null;
-            }
-
-            protected void onProgressUpdate(Integer... values) {
-                super.onProgressUpdate(values);
-                dialog.setProgress(values[0]);
-            }
-
-            protected void onPostExecute(Object _ignore) {
-                dialog.dismiss();
-                if (hasError()) {
-                    String str = "An error happened while retrieving maps:" + getErrorMessage();
-                    log(str, getError());
-                    logUser(str);
-                } else {
-                    loadMap(areaFolder);
-                }
-            }
-        }.execute();
+        loadMap(areaFolder);
+        return;
     }
 
     //this loads the map based on which file is selected which is defined by the parameter.
+    //TODO: Use an intent to set the starting position and update this continuously
     void loadMap(File areaFolder) {
         logUser("loading map");
 
@@ -646,8 +484,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         mapView.map().layers().add(itemizedLayer);
 
         // Map position
-        GeoPoint mapCenter = tileSource.getMapInfo().boundingBox.getCenterPoint();
-        mapView.map().setMapPosition(mapCenter.getLatitude(), mapCenter.getLongitude(), 1 << 15);
+        mapView.map().setMapPosition(55.39, 10.38 , 1 << 15);
 
         //here the map is set to the content view, this is a fairly odd way of doing it but it makes sense when using files.
         setContentView(mapView);
@@ -655,6 +492,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //i have no clue what this does honestly, but it looks like it tries to create the graph
+    //TODO: Find out what the fuck this does
     void loadGraphStorage() {
         logUser("loading graph (" + Constants.VERSION + ") ... ");
         new GHAsyncTask<Void, Void, Path>() {
@@ -684,7 +522,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         prepareInProgress = false;
     }
 
-    //builds the layer for the path, do not fuck with this method
+    //WARNING: DO NOT FUCK WITH THIS METHOD!
     private PathLayer createPathLayer(PathWrapper response) {
         Style style = Style.builder()
                 .fixed(true)
@@ -702,6 +540,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //drawing markers do not fuck with this stuff. I fucking hate messing up with OpenGL stuff
+    //OpenGL method needs to be left the fuck alone
     @SuppressWarnings("deprecation")
     private MarkerItem createMarkerItem(GeoPoint p, int resource) {
         Drawable drawable = getResources().getDrawable(resource);
@@ -713,6 +552,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //calculation of the path, this uses Dijkstra to calculate the path it seems, do not mess with this it should be fine
+    //TODO: Find out if we can cut this down a bit, probably not though -- low priority
     public void calcPath(final double fromLat, final double fromLon,
                          final double toLat, final double toLon) {
 
@@ -754,22 +594,21 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     /**
      * toast and logging methods
+     * TODO: decide if we want these methods, they are fairly pointless
      * @param str
      */
     private void log(String str) {
         Log.i("GH", str);
     }
 
-    private void log(String str, Throwable t) {
-        Log.i("GH", str, t);
-    }
-
+    //TODO: see above
     private void logUser(String str) {
         log(str);
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
     }
 
     //not sure we need this but i dont know what the options menu is
+    //TODO: Find out what this does
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -778,6 +617,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //still options stuff, not sure what it does
+    //TODO: Find out what this does
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case NEW_MENU_ID:
@@ -798,12 +638,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         return true;
     }
 
+
     //custom interface for spinners
-    public interface MySpinnerListener {
+    //TODO: remove once the spinner is gone
+    interface MySpinnerListener {
         void onSelect(String selectedArea, String selectedFile);
     }
 
     //this ensures that the longpress method works. we might not need this, not sure
+    //TODO: remove once the path is set with addresses
     class MapEventsReceiver extends Layer implements GestureListener {
         //makes sure the events are based on the map
         MapEventsReceiver(org.oscim.map.Map map) {

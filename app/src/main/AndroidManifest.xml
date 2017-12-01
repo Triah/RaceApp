@@ -26,8 +26,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".WarningActivity">
-            android:label="@string/title_activity_main"
-            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +38,7 @@
         <activity android:name=".RegisterUserActivity"/>
         <activity android:name=".HighscoreActivity"/>
         <activity android:name=".MainActivity"/>
+        <activity android:name=".DefineRouteActivity"/>
 
         <service
             android:name=".GpsLocationListener"
