@@ -23,6 +23,8 @@ public class DefineRouteActivity extends Activity {
     EditText startAddresse;
     EditText endAddresse;
     Button confirmAddresse;
+    double startLat;
+    double startLng;
 
     //this is just for checking viability of response
     Button checkResultButton;
@@ -79,6 +81,25 @@ public class DefineRouteActivity extends Activity {
                 @Override
                 public void onResponse(String response) {
                     System.out.println("response is: " + response.substring(0,1000));
+                    String responseStringArray[] = response.substring(0,1000).split(":");
+                    StringBuilder responseSb = new StringBuilder();
+                    responseSb.append(responseStringArray[36]);
+                    responseSb.append(responseStringArray[37]);
+                    responseSb.append(responseStringArray[38]);
+
+                    String[] getCloseToLatLng = responseSb.toString().split("\"");
+                    StringBuilder latlngSb = new StringBuilder();
+
+                    latlngSb.append(getCloseToLatLng[2]);
+                    latlngSb.append(getCloseToLatLng[4]);
+
+                    String[] finalSplitLatLng = latlngSb.toString().split(",|\\}");
+                    String lat = finalSplitLatLng[0];
+                    String lng = finalSplitLatLng[1];
+
+                    startLat = Double.parseDouble(lat);
+                    startLng = Double.parseDouble(lng);
+
                 }
             }, new Response.ErrorListener() {
                 @Override
