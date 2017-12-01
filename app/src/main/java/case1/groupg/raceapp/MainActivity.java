@@ -1,17 +1,13 @@
 package case1.groupg.raceapp;
 
-import android.*;
 import android.app.Activity;
 
 
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -35,7 +31,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -82,8 +77,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.TimerTask;
 
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -111,6 +105,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_ID = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_ID";
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_TEXT = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_TEXT";
     private Timer timer;
+    double startLat;
+    double startLng;
+    double endLat;
+    double endLng;
+    public GeoPoint startRoutePosition;
+    public GeoPoint endRoutePosition;
 
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -123,55 +123,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     };
 
-
-    /**
-     * okay so basically this method reacts to long presses by checking if the app is ready for it
-     * if it is ready and it is not currently calculating the shortest path
-     * then if the starting point is not null and the end is null the end is the geopoint parameter
-     * the shortestPathRunning is set to true and it adds the red icon followed by a calculation of the path
-     *
-     * if the start is null then it goes to the else statement making the parameter of the method p and sets the end point to null
-     * this means that the method should be called twice to make a path
-     *
-     * not quite sure what the removal of the pathLayer does.
-     * but basically this is the bread and butter of the logic
-     *
-     *
-     *
-     * TODO: Refactor this method such that instead of using long presses it uses adresses, no clue how this works yet though
-     * TODO: Probably works with sending the adresses with an intent from an earlier screen and getting the lat,lngs from these
-     * @param p
-     * @return
-     */
-    protected boolean onLongPress(GeoPoint p) {
-        if (!isReady())
-            return false;
-
-        if (shortestPathRunning) {
-            logUser("Calculation still in progress");
-            return false;
-        }
-
-        if (start != null && end == null) {
-            end = p;
-            shortestPathRunning = true;
-            itemizedLayer.addItem(createMarkerItem(p, R.drawable.marker_icon_red));
-            mapView.map().updateMap(true);
-
-            calcPath(start.getLatitude(), start.getLongitude(), end.getLatitude(),
-                    end.getLongitude());
-        } else {
-            start = p;
-            end = null;
-            // remove routing layers
-            mapView.map().layers().remove(pathLayer);
-            itemizedLayer.removeAllItems();
-
-            itemizedLayer.addItem(createMarkerItem(start, R.drawable.marker_icon_green));
-            mapView.map().updateMap(true);
-        }
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +137,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
         mapView = new MapView(this);
 
+        //setContentView(mapView);
+        Intent intentPoints = getIntent();
+        startLat = intentPoints.getDoubleExtra("startLat",0);
+        startLng = intentPoints.getDoubleExtra("startLng",0);
+        endLat = intentPoints.getDoubleExtra("endLat",0);
+        endLng = intentPoints.getDoubleExtra("endLng",0);
+
+        //the positions for the markers
+        startRoutePosition = new GeoPoint(startLat, startLng);
+        endRoutePosition = new GeoPoint(endLat,endLng);
 
         //broadcast receiver to get recognized activity from service
         IntentFilter intentFilter = new IntentFilter();
@@ -210,51 +171,56 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         if (!mapsFolder.exists())
             mapsFolder.mkdirs();
 
-        /**
-         * these are the spinners and buttons used to select the map
-         * gotta change this to always be denmark
-         */
-        localSpinner = (Spinner) findViewById(R.id.locale_area_spinner);
-        localButton = (Button) findViewById(R.id.locale_button);
-
         //executes the fetching of the files which have been downloaded already
         //TODO: This must be refactored to just initialize the map instead of choosing it
         chooseAreaFromLocal();
+
 
         /**
          * this needs to be reworked for the new location stuff
          * TODO: Find the proper way to set the user lat, lng as the starting point -- commented out for now
          */
-        /*
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 updateLocation();
             }
-        }, 0, 1000);
-    */}
+        }, 0, 5000);
+        }
 
-/*
-    public void updateLocation(){
-        this.runOnUiThread(timerTick);
+
+    public void updateLocation() {
+        if (!isReady()) {
+            return;
+        }
+         else{
+            if(start == null && end == null) {
+            this.runOnUiThread(timerTick);
+            }
+        }
     }
 
     private Runnable timerTick = new Runnable() {
         @Override
         public void run() {
-            if(mBound){
+                start = startRoutePosition;
+                end = endRoutePosition;
+                shortestPathRunning = true;
+                itemizedLayer.addItem(createMarkerItem(startRoutePosition, R.drawable.marker_icon_green));
+                itemizedLayer.addItem(createMarkerItem(endRoutePosition, R.drawable.marker_icon_red));
+                mapView.map().updateMap(true);
+                calcPath(start.getLatitude(), start.getLongitude(), end.getLatitude(),
+                        end.getLongitude());
+
+            /*if(mBound){
                 latitude = mService.getLatitude();
                 longitude = mService.getLongitude();
-            }
+            }*/
         }
     };
-*/
 
-
-    /**
-     * resumes the map and app
-     */
 
     @Override
     protected void onStart(){
@@ -269,7 +235,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         mapView.onResume();
     }
 
-
     @Override
     protected void onStop(){
         super.onStop();
@@ -279,19 +244,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     }
 
-    /**
-     * pauses the map and application
-     */
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
     }
 
-    /**
-     * destroys the objects from memory and clears space.
-     * this includes the map
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -303,7 +261,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
         mapView.map().destroy();
     }
-
 
     private void doPermissions() {
         // If we haven't been granted the permission to use "fine location"
@@ -351,20 +308,17 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     };
 
-    /**
-     * custom bool method which checks if the api is loaded yet
-     * @return
-     */
+
     boolean isReady() {
         // only return true if already loaded
         if (hopper != null)
             return true;
 
         if (prepareInProgress) {
-            logUser("Preparation still in progress");
+            //logUser("Preparation still in progress");
             return false;
         }
-        logUser("Prepare finished but hopper not ready. This happens when there was an error while loading the files");
+        //logUser("Prepare finished but hopper not ready. This happens when there was an error while loading the files");
         return false;
     }
 
@@ -376,7 +330,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private void initFiles(String area) {
         prepareInProgress = true;
         currentArea = area;
-        downloadingFiles();
+        getFilesFolder();
     }
 
     /**
@@ -399,61 +353,13 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         if (nameList.isEmpty())
             return;
 
-        //spinnerlistener which calls initFiles already before you call the button click listener
-        //this must be to increase the seamlessnes
-        chooseArea(localButton, localSpinner, nameList,
-                new MySpinnerListener() {
+        //hardcoded beacuase we never need another map than denmark
+        initFiles("denmark");
 
-                    @Override
-                    public void onSelect(String selectedArea, String selectedFile) {
-                    initFiles(selectedArea);
-                    }
-                });
     }
 
-
-    /**
-     * used by the async task above to lock in the area which should be downloaded i believe
-     * download begins as the spinner selects something
-     * TODO: This is the method to refactor for the setting of the map right away i think
-     * @param button
-     * @param spinner
-     * @param nameList
-     * @param myListener
-     */
-    private void chooseArea(Button button, final Spinner spinner,
-                            List<String> nameList, final MySpinnerListener myListener) {
-        final Map<String, String> nameToFullName = new TreeMap<>();
-        for (String fullName : nameList) {
-            String tmp = Helper.pruneFileEnd(fullName);
-            if (tmp.endsWith("-gh"))
-                tmp = tmp.substring(0, tmp.length() - 3);
-
-            tmp = AndroidHelper.getFileName(tmp);
-            nameToFullName.put(tmp, fullName);
-        }
-        nameList.clear();
-        nameList.addAll(nameToFullName.keySet());
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, nameList);
-        spinner.setAdapter(spinnerArrayAdapter);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Object o = spinner.getSelectedItem();
-                if (o != null && o.toString().length() > 0 && !nameToFullName.isEmpty()) {
-                    String area = o.toString();
-                    myListener.onSelect(area, nameToFullName.get(area));
-                } else {
-                    myListener.onSelect(null, null);
-                }
-            }
-        });
-    }
-
-    //load the map
-    //TODO: Rename this to something more sensible
-    void downloadingFiles() {
+    //getTheFiles
+    void getFilesFolder() {
         final File areaFolder = new File(mapsFolder, currentArea + "-gh");
         loadMap(areaFolder);
         return;
@@ -463,9 +369,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     //TODO: Use an intent to set the starting position and update this continuously
     void loadMap(File areaFolder) {
         logUser("loading map");
-
-        // Map events receiver
-        mapView.map().layers().add(new MapEventsReceiver(mapView.map()));
 
         // Map file source
         MapFileTileSource tileSource = new MapFileTileSource();
@@ -485,12 +388,13 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         //here the map is set to the content view, this is a fairly odd way of doing it but it makes sense when using files.
         setContentView(mapView);
         loadGraphStorage();
+
+
     }
 
     //i have no clue what this does honestly, but it looks like it tries to create the graph
     //TODO: Find out what the fuck this does
     void loadGraphStorage() {
-        logUser("loading graph (" + Constants.VERSION + ") ... ");
         new GHAsyncTask<Void, Void, Path>() {
             protected Path saveDoInBackground(Void... v) throws Exception {
                 GraphHopper tmpHopp = new GraphHopper().forMobile();
@@ -634,28 +538,4 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         return true;
     }
 
-
-    //custom interface for spinners
-    //TODO: remove once the spinner is gone
-    interface MySpinnerListener {
-        void onSelect(String selectedArea, String selectedFile);
-    }
-
-    //this ensures that the longpress method works. we might not need this, not sure
-    //TODO: remove once the path is set with addresses
-    class MapEventsReceiver extends Layer implements GestureListener {
-        //makes sure the events are based on the map
-        MapEventsReceiver(org.oscim.map.Map map) {
-            super(map);
-        }
-
-        @Override
-        public boolean onGesture(Gesture g, MotionEvent e) {
-            if (g instanceof Gesture.LongPress) {
-                GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
-                return onLongPress(p);
-            }
-            return false;
-        }
-    }
 }

@@ -204,12 +204,12 @@ public class DefineRouteActivity extends Activity {
 
 
     public void tryCreatingRoute(){
-        if(!startAddresse.getText().toString().equals("") && !endAddresse.getText().toString().equals("")){
-            Intent createRoute = new Intent(this, MainActivity.class);
-            createRoute.putExtra("StartAddresse", startAddresse.getText().toString());
-            createRoute.putExtra("EndAddresse", endAddresse.getText().toString());
-            startActivityForResult(createRoute,0);
-        }
+        Intent createRoute = new Intent(this, MainActivity.class);
+        createRoute.putExtra("startLat", startLat);
+        createRoute.putExtra("startLng", startLng);
+        createRoute.putExtra("endLat", endLat);
+        createRoute.putExtra("endLng", endLng);
+        startActivityForResult(createRoute,0);
     }
 
 }
