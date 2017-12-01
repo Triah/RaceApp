@@ -49,7 +49,6 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.PathWrapper;
-import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.Constants;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.Parameters.Algorithms;
@@ -75,7 +74,6 @@ import org.oscim.layers.vector.PathLayer;
 import org.oscim.layers.vector.geometries.Style;
 import org.oscim.theme.VtmThemes;
 import org.oscim.tiling.source.mapfile.MapFileTileSource;
-import org.osmdroid.api.IMapController;
 
 import java.util.Timer;
 
@@ -110,8 +108,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     public double longitude;
     GpsLocationListener mService;
     boolean mBound = false;
-    MapView map;
-    IMapController mapController;
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_ID = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_ID";
     public static final String BROADCAST_RECOGNIZED_ACTIVITY_TEXT = "case1.groupg.raceapp.BROADCAST_RECOGNIZED_ACTIVITY_TEXT";
     private Timer timer;
