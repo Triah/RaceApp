@@ -49,6 +49,7 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.PathWrapper;
+import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.Constants;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.Parameters.Algorithms;

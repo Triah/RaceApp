@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/startAdresse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="105dp"
+        android:ems="10"
+        android:hint="Starting Addresse"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/endAddresse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/startAdresse"
+        android:layout_below="@+id/startAdresse"
+        android:layout_marginTop="55dp"
+        android:ems="10"
+        android:hint="End Addresse"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/acceptAddresseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/endAddresse"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="78dp"
+        android:text="Confirm" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"
+        android:text="Example: Exampleroad 22, 5000" />
+
+    <Button
+        android:id="@+id/checkResponseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/acceptAddresseButton"
+        android:layout_marginEnd="17dp"
+        android:layout_marginTop="44dp"
+        android:layout_toStartOf="@+id/acceptAddresseButton"
+        android:text="Get Response" />
+</RelativeLayout>

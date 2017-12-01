@@ -38,6 +38,7 @@
         <activity android:name=".RegisterUserActivity"/>
         <activity android:name=".HighscoreActivity"/>
         <activity android:name=".MainActivity"/>
+        <activity android:name=".DefineRouteActivity"/>
 
         <service
             android:name=".GpsLocationListener"
