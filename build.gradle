@@ -20,5 +20,6 @@ allprojects {
         google()
         jcenter()
         maven { url "https://oss.sonatype.org/content/groups/public/" }
+        maven { url 'http://artifactory.cloud.mapquest.com/artifactory/et-android-binaries' }
     }
 }

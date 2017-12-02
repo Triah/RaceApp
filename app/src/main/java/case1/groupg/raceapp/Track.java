@@ -7,6 +7,7 @@ import java.util.List;
  */
 
 public class Track {
+
     double latitudeStart;
     double length;
     double latitudeEnd;

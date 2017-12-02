@@ -89,7 +89,7 @@ public class GpsLocationListener extends Service {
 
             // Start listening for updates
             locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 2 * 2 * 1000, 0, locationListenerGPS);
+                    LocationManager.NETWORK_PROVIDER,1000, 0, locationListenerGPS);
 
         }
     }
