@@ -32,24 +32,30 @@
         android:layout_below="@+id/endAddresse"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="78dp"
-        android:text="Confirm" />
+        android:text="Calculate Route" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/hintAndErrorView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="64dp"
         android:text="Example: Exampleroad 22, 5000" />
 
     <Button
-        android:id="@+id/checkResponseButton"
+        android:id="@+id/confirmStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/acceptAddresseButton"
-        android:layout_marginEnd="17dp"
-        android:layout_marginTop="44dp"
-        android:layout_toStartOf="@+id/acceptAddresseButton"
-        android:text="Get Response" />
+        android:layout_below="@+id/startAdresse"
+        android:layout_centerHorizontal="true"
+        android:text="Confirm Start Addresse" />
+
+    <Button
+        android:id="@+id/confirmEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/endAddresse"
+        android:layout_centerHorizontal="true"
+        android:text="Confirm End Adresse" />
 </RelativeLayout>
