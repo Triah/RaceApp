@@ -100,6 +100,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     public GeoPoint startRoutePosition;
     public GeoPoint endRoutePosition;
 
+    public static User player = null; // The user, who is logged in, and plays the game
+
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
