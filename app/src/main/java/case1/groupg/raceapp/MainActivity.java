@@ -192,6 +192,13 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 
     public void updateLocation() {
+        if(mBound){
+            if(mBound) {
+                latitude = mService.getLatitude();
+                longitude = mService.getLongitude();
+                this.runOnUiThread(updateMapCenter);
+            }
+        }
         if (!isReady()) {
             return;
         }
@@ -201,6 +208,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             }
         }
     }
+
+    private Runnable updateMapCenter = new Runnable() {
+        @Override
+        public void run() {
+            mapView.map().setMapPosition(latitude, longitude, 1<<15);
+        }
+    };
+
 
     private Runnable timerTick = new Runnable() {
         @Override
@@ -213,11 +228,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 mapView.map().updateMap(true);
                 calcPath(start.getLatitude(), start.getLongitude(), end.getLatitude(),
                         end.getLongitude());
-
-            /*if(mBound){
-                latitude = mService.getLatitude();
-                longitude = mService.getLongitude();
-            }*/
         }
     };
 
@@ -388,8 +398,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         //here the map is set to the content view, this is a fairly odd way of doing it but it makes sense when using files.
         setContentView(mapView);
         loadGraphStorage();
-
-
     }
 
     //i have no clue what this does honestly, but it looks like it tries to create the graph
