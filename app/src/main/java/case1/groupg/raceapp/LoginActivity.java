@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -14,8 +15,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Created by Nicolai on 30-11-2017.
@@ -27,6 +33,8 @@ public class LoginActivity extends Activity{
     EditText password;
     Button loginButton;
     Button registerButton;
+
+    ImageView appIcon;
 
     DatabaseReference databaseReference;
 
@@ -44,6 +52,8 @@ public class LoginActivity extends Activity{
         password = (EditText) findViewById(R.id.passwordText);
         loginButton = (Button) findViewById(R.id.loginbutton);
         registerButton = (Button) findViewById(R.id.registerbutton);
+        appIcon = findViewById(R.id.app_icon);
+        appIcon.setImageResource(R.drawable.app_icon);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,5 +124,32 @@ public class LoginActivity extends Activity{
 
             }
         });
+
+        // Querying ArrayList from FireBase
+//        databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+//        databaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                ArrayList<Track> al = (ArrayList<Track>) dataSnapshot.getValue();
+//                DefineRouteActivity.tracks = al;
+//                System.out.println("#######********##########*************#####");
+//                System.out.println(DefineRouteActivity.tracks.getClass());
+//                System.out.println(DefineRouteActivity.tracks.size());
+//                System.out.println(DefineRouteActivity.tracks.get(0));
+//                Collection<Track> values = DefineRouteActivity.tracks;
+//                ArrayList<Track> tt = new ArrayList<>(values);
+//                for (int i = 0; i < tt.size(); i++) {
+//                    Track track = tt.get(i);
+//                    System.out.println("wow");
+//                }
+//
+//                System.out.println("#######********##########*************##### END END END");
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 }

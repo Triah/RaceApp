@@ -1,32 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/choosetrackbutton"
+    <ImageView
+        android:id="@+id/app_icon_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="69dp"
-        android:text="Choose track"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        app:srcCompat="@drawable/app_icon" />
 
-    <Button
-        android:id="@+id/highscorebutton"
+    <ImageView
+        android:id="@+id/choose_track_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
-        android:text="View Highscores"
-        android:layout_below="@+id/choosetrackbutton"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/app_icon_icon"
+        android:layout_marginStart="14dp"
+        app:srcCompat="@drawable/choose_track" />
 
-    <Button
-        android:id="@+id/avatarbutton"
+    <ImageView
+        android:id="@+id/high_scores_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="69dp"
-        android:text="Profile"
-        android:layout_below="@+id/highscorebutton"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignBottom="@+id/choose_track_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="12dp"
+        app:srcCompat="@drawable/high_scores" />
+
+    <ImageView
+        android:id="@+id/profile_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/choose_track_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        app:srcCompat="@drawable/profile" />
 </RelativeLayout>

@@ -15,13 +15,29 @@ public class Track {
     double longitudeEnd;
     List<String> usersWhichHaveCompleted;
 
-    public Track(double latitudeStart, double length, double latitudeEnd, double longitudeStart, double longitudeEnd, List<String> usersWhichHaveCompleted) {
+    String startAddress;
+    String endAddress;
+
+    public Track(double latitudeStart, double length, double latitudeEnd, double longitudeStart,
+                 double longitudeEnd, List<String> usersWhichHaveCompleted) {
         this.latitudeStart = latitudeStart;
         this.length = length;
         this.latitudeEnd = latitudeEnd;
         this.longitudeStart = longitudeStart;
         this.longitudeEnd = longitudeEnd;
         this.usersWhichHaveCompleted = usersWhichHaveCompleted;
+    }
+
+    public Track(double latitudeStart, double length, double latitudeEnd, double longitudeStart,
+                 double longitudeEnd, List<String> usersWhichHaveCompleted, String startAddress, String endAddress) {
+        this.latitudeStart = latitudeStart;
+        this.length = length;
+        this.latitudeEnd = latitudeEnd;
+        this.longitudeStart = longitudeStart;
+        this.longitudeEnd = longitudeEnd;
+        this.usersWhichHaveCompleted = usersWhichHaveCompleted;
+        this.startAddress = startAddress;
+        this.endAddress = endAddress;
     }
 
     public double getLatitudeStart() {
@@ -46,5 +62,21 @@ public class Track {
 
     public List<String> getUsersWhichHaveCompleted() {
         return usersWhichHaveCompleted;
+    }
+
+    public String getStartAddress() {
+        return startAddress;
+    }
+
+    public void setStartAddress(String startAddress) {
+        this.startAddress = startAddress;
+    }
+
+    public String getEndAddress() {
+        return endAddress;
+    }
+
+    public void setEndAddress(String endAddress) {
+        this.endAddress = endAddress;
     }
 }

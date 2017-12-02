@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 /**
  * Created by Nicolai on 29-11-2017.
@@ -12,20 +13,35 @@ import android.widget.Button;
 
 public class MainScreenActivity extends Activity {
 
-    Button chooseTrackButton;
-    Button viewHighscoreButton;
-    Button viewProfileButton;
+//    Button chooseTrackButton;
+//    Button viewHighscoreButton;
+//    Button viewProfileButton;
+
+    ImageView appIcon;
+    ImageView trackChooser;
+    ImageView highScores;
+    ImageView profile;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
 
-        chooseTrackButton = (Button) findViewById(R.id.choosetrackbutton);
-        viewHighscoreButton = (Button) findViewById(R.id.highscorebutton);
-        viewProfileButton = (Button) findViewById(R.id.avatarbutton);
+//        chooseTrackButton = (Button) findViewById(R.id.choosetrackbutton);
+//        viewHighscoreButton = (Button) findViewById(R.id.highscorebutton);
+//        viewProfileButton = (Button) findViewById(R.id.avatarbutton);
 
-        chooseTrackButton.setOnClickListener(new View.OnClickListener() {
+        appIcon = findViewById(R.id.app_icon_icon);
+        trackChooser = findViewById(R.id.choose_track_icon);
+        highScores = findViewById(R.id.high_scores_icon);
+        profile = findViewById(R.id.profile_icon);
+
+        appIcon.setImageResource(R.drawable.app_icon);
+        trackChooser.setImageResource(R.drawable.choose_track);
+        highScores.setImageResource(R.drawable.high_scores);
+        profile.setImageResource(R.drawable.profile);
+
+        trackChooser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent chooseTrack = new Intent(v.getContext(),ChooseTrackActivity.class);
@@ -33,7 +49,7 @@ public class MainScreenActivity extends Activity {
             }
         });
 
-        viewHighscoreButton.setOnClickListener(new View.OnClickListener() {
+        highScores.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent viewHighscore = new Intent(v.getContext(),HighscoreActivity.class);
@@ -41,7 +57,7 @@ public class MainScreenActivity extends Activity {
             }
         });
 
-        viewProfileButton.setOnClickListener(new View.OnClickListener() {
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent viewProfile = new Intent(v.getContext(),ProfileActivity.class);

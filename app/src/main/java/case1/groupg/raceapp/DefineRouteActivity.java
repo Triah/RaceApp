@@ -14,6 +14,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -73,6 +75,10 @@ public class DefineRouteActivity extends Activity {
         confirmAddresse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Track t = new Track(startLat, 1234, endLat, startLng, endLng, null, // TODO calc length
+                        startAddresse.getText().toString(), endAddresse.getText().toString());
+                tracks.add(t);
+                updateTracksDatabase(); // Uploads the list of tracks to FireBase including this new track
                 tryCreatingRoute();
             }
         });
@@ -214,6 +220,11 @@ public class DefineRouteActivity extends Activity {
         createRoute.putExtra("endLat", endLat);
         createRoute.putExtra("endLng", endLng);
         startActivityForResult(createRoute,0);
+    }
+
+    private void updateTracksDatabase(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+        databaseReference.setValue(tracks); // Uploading all tracks
     }
 
 }

@@ -17,13 +17,13 @@ public class ChooseTrackActivity extends TabActivity {
 
         TabHost.TabSpec createTrackTab = tabHost.newTabSpec("Create Track");
         createTrackTab.setIndicator("Create Track");
-        createTrackTab.setIndicator("", getResources().getDrawable(R.drawable.bike_1));
+        createTrackTab.setIndicator("", getResources().getDrawable(R.drawable.add_track));
 //        topTenTab.setContent(new Intent(this, TopTenTimesTab.class));
         createTrackTab.setContent(new Intent(this, DefineRouteActivity.class));
 
         TabHost.TabSpec topTenXp = tabHost.newTabSpec("Choose Track");
         topTenXp.setIndicator("Choose Track");
-        topTenXp.setIndicator("", getResources().getDrawable(R.drawable.bike_2));
+        topTenXp.setIndicator("", getResources().getDrawable(R.drawable.bike_1));
         topTenXp.setContent(new Intent(this, TrackChooserActivity.class));
 
         tabHost.addTab(createTrackTab);
