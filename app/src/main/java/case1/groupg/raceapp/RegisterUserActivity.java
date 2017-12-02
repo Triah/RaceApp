@@ -60,7 +60,7 @@ public class RegisterUserActivity extends Activity {
                         !registerEmail.getText().toString().equals("")){ // Valid registration fields
                     final String userID = UUID.randomUUID().toString();
                     final User newUser = new User(userID, registerUsername.getText().toString(),
-                            registerEmail.getText().toString(), registerPassword.getText().toString());
+                            registerEmail.getText().toString(), registerPassword.getText().toString(), false);
 
                     // Checking if user already exists or not
                     queryDataFromFireBase();
