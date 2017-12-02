@@ -1,5 +1,7 @@
 package case1.groupg.raceapp;
 
+import java.util.ArrayList;
+
 /**
  * Created by Nicolai on 29-11-2017.
  */
@@ -10,7 +12,19 @@ public class User {
     String password;
     String email;
     int experiencePoints = 0;
-//    int avatarID;
+
+    private class TrackTime {
+        Track track;
+        long time;
+
+        public TrackTime(Track track, long time) {
+            this.track = track;
+            this.time = time;
+        }
+    }
+
+    ArrayList<TrackTime> trackTimes = new ArrayList<>();
+    ArrayList<Track> racedTracks = new ArrayList<>();
 
     // No args constructor for FireBase
     public User(){}
@@ -54,5 +68,13 @@ public class User {
 
     public void addExperiencePoint(int metersTravelled, int multiplier){
         experiencePoints += (metersTravelled * multiplier);
+    }
+
+    public void addTrackTime(Track track, long time){
+        trackTimes.add(new TrackTime(track, time));
+    }
+
+    public void addRacedTrack(Track track){
+        racedTracks.add(track);
     }
 }

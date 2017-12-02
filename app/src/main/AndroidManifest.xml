@@ -52,7 +52,8 @@
 
         <activity android:name=".TopTenTimesTab" />
         <activity android:name=".TopTenXPTab" />
-        <activity android:name=".MyLVLTab"></activity>
+        <activity android:name=".MyLVLTab" />
+        <activity android:name=".TrackChooserActivity"></activity>
     </application>
 
 </manifest>

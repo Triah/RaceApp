@@ -7,15 +7,14 @@ import java.util.List;
  */
 
 public class Track {
-
-    float latitudeStart;
-    float length;
-    float latitudeEnd;
-    float longitudeStart;
-    float longitudeEnd;
+    double latitudeStart;
+    double length;
+    double latitudeEnd;
+    double longitudeStart;
+    double longitudeEnd;
     List<String> usersWhichHaveCompleted;
 
-    public Track(float latitudeStart, float length, float latitudeEnd, float longitudeStart, float longitudeEnd, List<String> usersWhichHaveCompleted) {
+    public Track(double latitudeStart, double length, double latitudeEnd, double longitudeStart, double longitudeEnd, List<String> usersWhichHaveCompleted) {
         this.latitudeStart = latitudeStart;
         this.length = length;
         this.latitudeEnd = latitudeEnd;
@@ -24,23 +23,23 @@ public class Track {
         this.usersWhichHaveCompleted = usersWhichHaveCompleted;
     }
 
-    public float getLatitudeStart() {
+    public double getLatitudeStart() {
         return latitudeStart;
     }
 
-    public float getLength() {
+    public double getLength() {
         return length;
     }
 
-    public float getLatitudeEnd() {
+    public double getLatitudeEnd() {
         return latitudeEnd;
     }
 
-    public float getLongitudeStart() {
+    public double getLongitudeStart() {
         return longitudeStart;
     }
 
-    public float getLongitudeEnd() {
+    public double getLongitudeEnd() {
         return longitudeEnd;
     }
 

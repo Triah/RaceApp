@@ -22,7 +22,8 @@ public class HighscoreActivity extends TabActivity{
         TabHost.TabSpec topTenTab = tabHost.newTabSpec("Top Ten Times");
         topTenTab.setIndicator("Top Ten Times");
         topTenTab.setIndicator("", getResources().getDrawable(R.drawable.top_ten_times));
-        topTenTab.setContent(new Intent(this, TopTenTimesTab.class));
+//        topTenTab.setContent(new Intent(this, TopTenTimesTab.class));
+        topTenTab.setContent(new Intent(this, TrackChooserActivity.class));
 
         TabHost.TabSpec topTenXp = tabHost.newTabSpec("Top Ten XP");
         topTenXp.setIndicator("Top Ten XP");
