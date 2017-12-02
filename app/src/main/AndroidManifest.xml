@@ -34,14 +34,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".MainScreenActivity"/>
-        <activity android:name=".ProfileActivity"/>
-        <activity android:name=".RegisterUserActivity"/>
-        <activity android:name=".HighscoreActivity"/>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".DefineRouteActivity"/>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".MainScreenActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".RegisterUserActivity" />
+        <activity android:name=".HighscoreActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".DefineRouteActivity" />
 
         <service
             android:name=".GpsLocationListener"
@@ -53,7 +52,8 @@
         <activity android:name=".TopTenTimesTab" />
         <activity android:name=".TopTenXPTab" />
         <activity android:name=".MyLVLTab" />
-        <activity android:name=".TrackChooserActivity"></activity>
+        <activity android:name=".TrackChooserActivity" />
+        <activity android:name=".ChooseTrackActivity"></activity>
     </application>
 
 </manifest>

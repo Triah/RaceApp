@@ -54,17 +54,17 @@ public class TrackListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((TrackListViewHolder) holder).bindView(position, MainActivity.tracks);
+        ((TrackListViewHolder) holder).bindView(position, DefineRouteActivity.tracks);
     }
 
     @Override
     public int getItemCount() {
-        MainActivity.tracks = new ArrayList<>();
+        DefineRouteActivity.tracks = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            MainActivity.tracks.add(new Track(1, 2, 3, 4, 5, null));
+            DefineRouteActivity.tracks.add(new Track(1, 2, 3, 4, 5, null));
         }
 
-        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + MainActivity.tracks.size());
-        return MainActivity.tracks.size();
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + DefineRouteActivity.tracks.size());
+        return DefineRouteActivity.tracks.size();
     }
 }

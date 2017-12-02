@@ -15,6 +15,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
+
 /**
  * Created by Nicolai on 01-12-2017.
  */
@@ -36,6 +38,8 @@ public class DefineRouteActivity extends Activity {
     String apiKey = "G4Y1nT2wA3fhwASVsxORu61nqbQhlCms";
     String country = "DK";
 
+    public static ArrayList<Track> tracks = new ArrayList<>(); // All tracks, that anyone ever raced
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -43,8 +47,8 @@ public class DefineRouteActivity extends Activity {
 
         queue = Volley.newRequestQueue(this);
 
-        startAddresse = (EditText) findViewById(R.id.startAdresse);
-        endAddresse = (EditText) findViewById(R.id.endAddresse);
+        startAddresse = (EditText) findViewById(R.id.startAdresse); startAddresse.setText("Birkeparken 228, 5340");
+        endAddresse = (EditText) findViewById(R.id.endAddresse); endAddresse.setText("Campusvej 55, 5230");
         confirmAddresse = (Button) findViewById(R.id.acceptAddresseButton);
         confirmStartAddresseButton = (Button) findViewById(R.id.confirmStart);
         confirmEndAddresseButton = (Button) findViewById(R.id.confirmEnd);

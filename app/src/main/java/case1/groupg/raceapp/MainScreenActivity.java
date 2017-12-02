@@ -28,7 +28,7 @@ public class MainScreenActivity extends Activity {
         chooseTrackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent chooseTrack = new Intent(v.getContext(),DefineRouteActivity.class);
+                Intent chooseTrack = new Intent(v.getContext(),ChooseTrackActivity.class);
                 startActivityForResult(chooseTrack,0);
             }
         });
