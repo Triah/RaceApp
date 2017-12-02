@@ -82,6 +82,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private File mapsFolder;
     private ItemizedLayer<MarkerItem> itemizedLayer;
     private PathLayer pathLayer;
+    boolean centered = false;
 
     public GoogleApiClient apiClient;
     private static int LOCATION_PERMISSION = 2;
@@ -179,13 +180,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 
     public void updateLocation() {
-        if(mBound){
-            if(mBound) {
-                latitude = mService.getLatitude();
-                longitude = mService.getLongitude();
-                this.runOnUiThread(updateMapCenter);
-            }
-        }
         if (!isReady()) {
             return;
         }
@@ -193,13 +187,36 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             if(start == null && end == null) {
             this.runOnUiThread(timerTick);
             }
+            if(mBound){
+                if(mBound) {
+                    latitude = mService.getLatitude();
+                    longitude = mService.getLongitude();
+                    this.runOnUiThread(updateMapCenter);
+                }
+            }
         }
     }
 
     private Runnable updateMapCenter = new Runnable() {
         @Override
         public void run() {
-            mapView.map().setMapPosition(latitude, longitude, 1<<15);
+            if(!centered){
+                mapView.map().setMapPosition(latitude, longitude, 1<<15);
+                centered = true;
+            }
+            GeoPoint currentLocation = new GeoPoint(latitude,longitude);
+
+            Drawable drawable = getResources().getDrawable(R.drawable.marker_icon_red);
+            Bitmap bitmap = AndroidGraphics.drawableToBitmap(drawable);
+            MarkerSymbol markerSymbol = new MarkerSymbol(bitmap, 0.5f, 1);
+            MarkerItem markerItem = new MarkerItem("currentPosition", "", currentLocation);
+            markerItem.setMarker(markerSymbol);
+            if(itemizedLayer.getItemList().size() >= 3){
+                itemizedLayer.getItemList().remove(2);
+            }
+            itemizedLayer.addItem(markerItem);
+            mapView.map().updateMap(true);
+            System.out.println(itemizedLayer.getItemList());
         }
     };
 
