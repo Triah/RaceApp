@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.UUID;
 
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -107,11 +108,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     double endLng;
     public GeoPoint startRoutePosition;
     public GeoPoint endRoutePosition;
-
+    String id;
 
     public static User player = null; // The user, who is logged in, and plays the game
     public static ArrayList<Track> tracks = new ArrayList<>();
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
+    DatabaseReference trackTimeDatabaseReference;
+    DatabaseReference usersTableDatabaseReference;
     boolean isRacing = false; // for testing purposes
     long startTime;
     long endTime;
@@ -131,7 +133,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        trackTimeDatabaseReference = FirebaseDatabase.getInstance().getReference("trackTimes");
+        usersTableDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         doPermissions();
         //this leaves out the map untill it has been chosen i believe
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -607,6 +610,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     private boolean onLongPress(GeoPoint p) {
+        String idString = "" + startLat + startLng + endLat + endLng + player.getUsername();
+        final String id = idString.replace(".", "");
+        final User user = player;
+        TrackTime trackTime = new TrackTime(id,0,0,user);
+        if(trackTimeDatabaseReference.child(id) == null){
+            trackTimeDatabaseReference.child(id).setValue(trackTime);
+        }
+
+        System.out.println(id);
         if(startLat != 0 &&
                 startLng != 0 &&
                 latitude != 0 &&
@@ -617,15 +629,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 //create intent to start watch!
                 startTime = System.currentTimeMillis();
                 isRacing = true;
+                trackTimeDatabaseReference.child(id).child("startTime").setValue(startTime);
                 return true;
             }
             if(distanceCurrentAndEnd < 100 && isRacing){
                 //set player.iscurrentlyracing to false
                 //stop timer and get time since start in milliseconds
                 endTime = System.currentTimeMillis();
-
-
-                long time = endTime - startTime;
+                trackTimeDatabaseReference.child(id).child("endTime").setValue(endTime);
+                long time =  endTime - startTime;
                 long seconds = (int) (time/1000) % 60;
                 logUser("Your time was recorded to be: " + seconds + " seconds");
                 isRacing = false;

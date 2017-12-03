@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 
 public class User {
-    String ID;
+    String id;
     String username;
     String password;
     String email;
@@ -31,8 +31,8 @@ public class User {
     public User(){}
 
     // Used to create new user
-    public User(String ID, String username, String email, String password, boolean isCurrentlyRacing){
-        this.ID = ID;
+    public User(String id, String username, String email, String password, boolean isCurrentlyRacing){
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -41,12 +41,16 @@ public class User {
 
     // Used to load user from database
     public User(String ID, String username, String email, String password, int experiencePoints, boolean isCurrentlyRacing){
-        this.ID = ID;
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.experiencePoints = experiencePoints;
         this.isCurrentlyRacing = isCurrentlyRacing;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public boolean isCurrentlyRacing() {
