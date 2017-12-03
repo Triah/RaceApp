@@ -13,6 +13,8 @@ public class User {
     String email;
     int experiencePoints = 0;
 
+    int bikeID = R.drawable.bike_1;
+
     private class TrackTime {
         Track track;
         long time;
@@ -76,5 +78,13 @@ public class User {
 
     public void addRacedTrack(Track track){
         racedTracks.add(track);
+    }
+
+    public int getBikeID() {
+        return bikeID;
+    }
+
+    public void setBikeID(int bikeID) {
+        this.bikeID = bikeID;
     }
 }

@@ -75,6 +75,7 @@ public class ProfileActivity extends Activity {
                     currentPage++;
                     bikeImage.setImageResource(bikes[currentPage]);
                     currentBikeID = bikes[currentPage];
+                    MainActivity.player.setBikeID(currentBikeID);
                     selectedBikeText.setText(currentPage+1 + " / " + (availabeBikes+1));
                 }
             }
@@ -88,6 +89,7 @@ public class ProfileActivity extends Activity {
                     currentPage--;
                     bikeImage.setImageResource(bikes[currentPage]);
                     currentBikeID = bikes[currentPage];
+                    MainActivity.player.setBikeID(currentBikeID);
                     selectedBikeText.setText(currentPage+1 + " / " + (availabeBikes+1));
                 }
             }
@@ -102,6 +104,7 @@ public class ProfileActivity extends Activity {
      * Returns the R.drawable ID for the currently selected bike
      * @return Currently selected bike's ID
      */
+    @Deprecated // Use User#getBikeID() instead
     public int getCurrentBikeID(){
         return currentBikeID;
     }
