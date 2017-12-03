@@ -12,6 +12,7 @@ public class User {
     String password;
     String email;
     int experiencePoints = 0;
+    boolean isCurrentlyRacing;
 
     private class TrackTime {
         Track track;
@@ -30,20 +31,26 @@ public class User {
     public User(){}
 
     // Used to create new user
-    public User(String ID, String username, String email, String password){
+    public User(String ID, String username, String email, String password, boolean isCurrentlyRacing){
         this.ID = ID;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.isCurrentlyRacing = isCurrentlyRacing;
     }
 
     // Used to load user from database
-    public User(String ID, String username, String email, String password, int experiencePoints){
+    public User(String ID, String username, String email, String password, int experiencePoints, boolean isCurrentlyRacing){
         this.ID = ID;
         this.username = username;
         this.password = password;
         this.email = email;
         this.experiencePoints = experiencePoints;
+        this.isCurrentlyRacing = isCurrentlyRacing;
+    }
+
+    public boolean isCurrentlyRacing() {
+        return isCurrentlyRacing;
     }
 
     public String getUsername() {
