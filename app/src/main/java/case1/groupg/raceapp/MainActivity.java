@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -208,8 +209,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             }
             GeoPoint currentLocation = new GeoPoint(latitude,longitude);
 
-            Drawable drawable = getResources().getDrawable(R.drawable.marker_icon_red);
+//            Drawable drawable = getResources().getDrawable(R.drawable.marker_icon_red);
+            Drawable drawable = getResources().getDrawable(R.drawable.bike_1_icon);
             Bitmap bitmap = AndroidGraphics.drawableToBitmap(drawable);
+
             MarkerSymbol markerSymbol = new MarkerSymbol(bitmap, 0.5f, 1);
             MarkerItem markerItem = new MarkerItem("currentPosition", "", currentLocation);
             markerItem.setMarker(markerSymbol);
@@ -551,5 +554,4 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
         return true;
     }
-
 }
