@@ -226,5 +226,4 @@ public class DefineRouteActivity extends Activity {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
         databaseReference.setValue(tracks); // Uploading all tracks
     }
-
 }

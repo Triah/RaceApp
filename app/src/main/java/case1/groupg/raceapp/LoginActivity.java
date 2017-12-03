@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -126,11 +127,13 @@ public class LoginActivity extends Activity{
         });
 
         // Querying ArrayList from FireBase
-//        databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
-//        databaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                ArrayList<Track> al = (ArrayList<Track>) dataSnapshot.getValue();
+        databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+        databaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, Object> al = (HashMap<String, Object>) dataSnapshot.getValue();
+//                System.out.println("8888888 :" + al.getClass());
+//                System.out.println(al.get(0).getClass());
 //                DefineRouteActivity.tracks = al;
 //                System.out.println("#######********##########*************#####");
 //                System.out.println(DefineRouteActivity.tracks.getClass());
@@ -142,14 +145,15 @@ public class LoginActivity extends Activity{
 //                    Track track = tt.get(i);
 //                    System.out.println("wow");
 //                }
-//
-//                System.out.println("#######********##########*************##### END END END");
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+//                System.out.println("#######****" + dataSnapshot.getValue().get(0).getClass());
+
+                System.out.println("#######********##########*************##### END END END");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

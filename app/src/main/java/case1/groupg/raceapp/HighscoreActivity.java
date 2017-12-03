@@ -33,7 +33,7 @@ public class HighscoreActivity extends TabActivity{
         TabHost.TabSpec myLVL = tabHost.newTabSpec("My Level");
         myLVL.setIndicator("My Level");
         myLVL.setIndicator("", getResources().getDrawable(R.drawable.my_level));
-        myLVL.setContent(new Intent(this, TopTenXPTab.class));
+        myLVL.setContent(new Intent(this, MyLVLTab.class));
 
         tabHost.addTab(topTenTab);
         tabHost.addTab(topTenXp);
