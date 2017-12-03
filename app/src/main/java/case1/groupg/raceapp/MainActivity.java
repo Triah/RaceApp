@@ -36,6 +36,8 @@ import android.view.Window;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
@@ -49,6 +51,10 @@ import org.oscim.android.MapView;
 import org.oscim.android.canvas.AndroidGraphics;
 import org.oscim.backend.canvas.Bitmap;
 import org.oscim.core.GeoPoint;
+import org.oscim.event.Gesture;
+import org.oscim.event.GestureListener;
+import org.oscim.event.MotionEvent;
+import org.oscim.layers.Layer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
@@ -68,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.UUID;
 
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -84,6 +91,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private ItemizedLayer<MarkerItem> itemizedLayer;
     private PathLayer pathLayer;
     boolean centered = false;
+    double distanceCurrentAndStart;
+    double distanceCurrentAndEnd;
 
     public GoogleApiClient apiClient;
     private static int LOCATION_PERMISSION = 2;
@@ -100,8 +109,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     double endLng;
     public GeoPoint startRoutePosition;
     public GeoPoint endRoutePosition;
+    String id;
 
     public static User player = null; // The user, who is logged in, and plays the game
+    public static ArrayList<Track> tracks = new ArrayList<>();
+    DatabaseReference trackTimeDatabaseReference;
+    DatabaseReference usersTableDatabaseReference;
+    boolean isRacing = false; // for testing purposes
+    long startTime;
+    long endTime;
+
 
     //broadcast receiver for getting recognized activity from detector service
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -117,7 +134,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        trackTimeDatabaseReference = FirebaseDatabase.getInstance().getReference("trackTimes");
+        usersTableDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         doPermissions();
         //this leaves out the map untill it has been chosen i believe
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -221,7 +239,13 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             }
             itemizedLayer.addItem(markerItem);
             mapView.map().updateMap(true);
-            System.out.println(itemizedLayer.getItemList());
+
+            distanceCurrentAndStart = distanceBetweenSetPointAndCurrent(startLat,startLng,latitude,longitude);
+            distanceCurrentAndEnd = distanceBetweenSetPointAndCurrent(endLat,endLng,latitude,longitude);
+
+            if(distanceCurrentAndStart < 100.00 && !isRacing){
+                logUser("You are close enough to begin the race, press and hold on the screen to begin race");
+            }
         }
     };
 
@@ -240,6 +264,21 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     };
 
+
+    public static double distanceBetweenSetPointAndCurrent(double setLat, double setLng, double currentLat, double currentLng){
+        final int R = 6371;
+        double latDistance = Math.toRadians(currentLat - setLat);
+        double lonDistance = Math.toRadians(currentLng - setLng);
+        double a = Math.sin(latDistance/2)*Math.sin(latDistance/2)
+                + Math.cos(Math.toRadians(setLat))*Math.cos(Math.toRadians(currentLat))
+                * Math.sin(lonDistance/2)*Math.sin(lonDistance/2);
+        double c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+        double distance = R * c * 1000;
+
+        distance = Math.pow(distance,2);
+
+        return Math.sqrt(distance);
+    }
 
     @Override
     protected void onStart(){
@@ -388,6 +427,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     //TODO: Use an intent to set the starting position and update this continuously
     void loadMap(File areaFolder) {
         logUser("loading map");
+
+        mapView.map().layers().add(new MapEventsReceiver(mapView.map()));
 
         // Map file source
         MapFileTileSource tileSource = new MapFileTileSource();
@@ -551,6 +592,61 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         + end.getLatitude() + "," + end.getLongitude()));
                 startActivity(intent);
                 break;
+        }
+        return true;
+    }
+
+
+    class MapEventsReceiver extends Layer implements GestureListener {
+        //makes sure the events are based on the map
+        MapEventsReceiver(org.oscim.map.Map map) {
+            super(map);
+        }
+
+        @Override
+        public boolean onGesture(Gesture g, MotionEvent e) {
+            if (g instanceof Gesture.LongPress) {
+                GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
+                return onLongPress(p);
+            }
+            return false;
+        }
+    }
+
+    private boolean onLongPress(GeoPoint p) {
+        String idString = "" + startLat + startLng + endLat + endLng + player.getUsername();
+        final String id = idString.replace(".", "");
+        final User user = player;
+        TrackTime trackTime = new TrackTime(id,0,0,user);
+        if(trackTimeDatabaseReference.child(id) == null){
+            trackTimeDatabaseReference.child(id).setValue(trackTime);
+        }
+
+        System.out.println(id);
+        if(startLat != 0 &&
+                startLng != 0 &&
+                latitude != 0 &&
+                longitude != 0){
+            if(distanceCurrentAndStart < 100.00 && !isRacing){
+                //set player.iscurrentlyracing to true
+                logUser("The race has begun! Have fun! Take care of yourself");
+                //create intent to start watch!
+                startTime = System.currentTimeMillis();
+                isRacing = true;
+                trackTimeDatabaseReference.child(id).child("startTime").setValue(startTime);
+                return true;
+            }
+            if(distanceCurrentAndEnd < 100 && isRacing){
+                //set player.iscurrentlyracing to false
+                //stop timer and get time since start in milliseconds
+                endTime = System.currentTimeMillis();
+                trackTimeDatabaseReference.child(id).child("endTime").setValue(endTime);
+                long time =  endTime - startTime;
+                long seconds = (int) (time/1000) % 60;
+                logUser("Your time was recorded to be: " + seconds + " seconds");
+                isRacing = false;
+                return true;
+            }
         }
         return true;
     }

@@ -7,11 +7,12 @@ import java.util.ArrayList;
  */
 
 public class User {
-    String ID;
+    String id;
     String username;
     String password;
     String email;
     int experiencePoints = 0;
+    boolean isCurrentlyRacing;
 
     int bikeID = R.drawable.bike_1;
 
@@ -32,20 +33,30 @@ public class User {
     public User(){}
 
     // Used to create new user
-    public User(String ID, String username, String email, String password){
-        this.ID = ID;
+    public User(String id, String username, String email, String password, boolean isCurrentlyRacing){
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.isCurrentlyRacing = isCurrentlyRacing;
     }
 
     // Used to load user from database
-    public User(String ID, String username, String email, String password, int experiencePoints){
-        this.ID = ID;
+    public User(String ID, String username, String email, String password, int experiencePoints, boolean isCurrentlyRacing){
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.experiencePoints = experiencePoints;
+        this.isCurrentlyRacing = isCurrentlyRacing;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public boolean isCurrentlyRacing() {
+        return isCurrentlyRacing;
     }
 
     public String getUsername() {
