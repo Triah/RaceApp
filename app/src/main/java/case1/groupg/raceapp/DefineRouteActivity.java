@@ -14,6 +14,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 /**
  * Created by Nicolai on 01-12-2017.
@@ -36,6 +40,8 @@ public class DefineRouteActivity extends Activity {
     String apiKey = "G4Y1nT2wA3fhwASVsxORu61nqbQhlCms";
     String country = "DK";
 
+    public static ArrayList<Track> tracks = new ArrayList<>(); // All tracks, that anyone ever raced
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -43,8 +49,8 @@ public class DefineRouteActivity extends Activity {
 
         queue = Volley.newRequestQueue(this);
 
-        startAddresse = (EditText) findViewById(R.id.startAdresse);
-        endAddresse = (EditText) findViewById(R.id.endAddresse);
+        startAddresse = (EditText) findViewById(R.id.startAdresse); startAddresse.setText("Birkeparken 228, 5340");
+        endAddresse = (EditText) findViewById(R.id.endAddresse); endAddresse.setText("Campusvej 55, 5230");
         confirmAddresse = (Button) findViewById(R.id.acceptAddresseButton);
         confirmStartAddresseButton = (Button) findViewById(R.id.confirmStart);
         confirmEndAddresseButton = (Button) findViewById(R.id.confirmEnd);
@@ -69,6 +75,10 @@ public class DefineRouteActivity extends Activity {
         confirmAddresse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Track t = new Track(startLat, 1234, endLat, startLng, endLng, null, // TODO calc length
+                        startAddresse.getText().toString(), endAddresse.getText().toString());
+                tracks.add(t);
+                updateTracksDatabase(); // Uploads the list of tracks to FireBase including this new track
                 tryCreatingRoute();
             }
         });
@@ -210,6 +220,11 @@ public class DefineRouteActivity extends Activity {
         createRoute.putExtra("endLat", endLat);
         createRoute.putExtra("endLng", endLng);
         startActivityForResult(createRoute,0);
+    }
+
+    private void updateTracksDatabase(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+        databaseReference.setValue(tracks); // Uploading all tracks
     }
 
 }
