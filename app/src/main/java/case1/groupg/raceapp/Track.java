@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Track {
 
+
     double latitudeStart;
     double length;
     double latitudeEnd;
@@ -17,6 +18,8 @@ public class Track {
 
     String startAddress;
     String endAddress;
+
+    public Track(){}
 
     public Track(double latitudeStart, double length, double latitudeEnd, double longitudeStart,
                  double longitudeEnd, List<String> usersWhichHaveCompleted) {

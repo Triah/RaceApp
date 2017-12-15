@@ -17,6 +17,5 @@ public class TrackChooserActivity extends Activity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.placeholder, trackListFragment);
         transaction.commit();
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     }
 }

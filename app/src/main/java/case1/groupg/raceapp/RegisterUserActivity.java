@@ -101,7 +101,6 @@ public class RegisterUserActivity extends Activity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 User u = dataSnapshot.getValue(User.class);
-                System.out.println("&&&&& " + u.username + " ** " + u.password + " *****");
                 usersList.add(u);
             }
 
