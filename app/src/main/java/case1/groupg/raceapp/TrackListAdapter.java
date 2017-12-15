@@ -29,8 +29,6 @@ public class TrackListAdapter extends RecyclerView.Adapter {
         public TrackListViewHolder(View itemView) {
             super(itemView);
 
-//            Typeface raceFont = Typeface.createFromAsset(getAssets(), "fonts/PassionOne-Regular.ttf");
-
             startPlace = itemView.findViewById(R.id.start_place); //startPlace.setTypeface(raceFont);
             trackLength = itemView.findViewById(R.id.track_length); //trackLength.setTypeface(raceFont);
             fromToLengthSubtitution = itemView.findViewById(R.id.from_to);
@@ -59,7 +57,7 @@ public class TrackListAdapter extends RecyclerView.Adapter {
         }
 
         @Override
-        public void onClick(View view) { // Starts the route calculation for a track chosen from the list
+        public void onClick(View view) {
 
         }
     }
@@ -77,12 +75,6 @@ public class TrackListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-//        DefineRouteActivity.tracks = new ArrayList<>();
-//        for (int i = 0; i < 100; i++) {
-//            DefineRouteActivity.tracks.add(new Track(1, 2, 3, 4, 5, null));
-//        }
-
-        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + DefineRouteActivity.tracks.size());
         return DefineRouteActivity.tracks.size();
     }
 }

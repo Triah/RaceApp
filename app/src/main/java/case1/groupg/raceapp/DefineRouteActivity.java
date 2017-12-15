@@ -14,10 +14,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nicolai on 01-12-2017.
@@ -36,6 +40,8 @@ public class DefineRouteActivity extends Activity {
     double endLat;
     double endLng;
 
+    DatabaseReference databaseReference;
+
     RequestQueue queue;
     String apiKey = "G4Y1nT2wA3fhwASVsxORu61nqbQhlCms";
     String country = "DK";
@@ -47,14 +53,23 @@ public class DefineRouteActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.define_route_screen);
 
+        if(tracks.size() != 0){
+            tracks.clear();
+        }
+
+        queryDataFromFireBase();
+
         queue = Volley.newRequestQueue(this);
 
-        startAddresse = (EditText) findViewById(R.id.startAdresse); startAddresse.setText("Birkeparken 228, 5340");
-        endAddresse = (EditText) findViewById(R.id.endAddresse); endAddresse.setText("Campusvej 55, 5230");
+        startAddresse = (EditText) findViewById(R.id.startAdresse);
+        endAddresse = (EditText) findViewById(R.id.endAddresse);
         confirmAddresse = (Button) findViewById(R.id.acceptAddresseButton);
         confirmStartAddresseButton = (Button) findViewById(R.id.confirmStart);
         confirmEndAddresseButton = (Button) findViewById(R.id.confirmEnd);
         textView = (TextView) findViewById(R.id.hintAndErrorView);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+
 
         confirmAddresse.setEnabled(false);
 
@@ -75,20 +90,65 @@ public class DefineRouteActivity extends Activity {
         confirmAddresse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Track t = new Track(startLat, 1234, endLat, startLng, endLng, null, // TODO calc length
-                        startAddresse.getText().toString(), endAddresse.getText().toString());
-                tracks.add(t);
-                updateTracksDatabase(); // Uploads the list of tracks to FireBase including this new track
-                tryCreatingRoute();
+
+                boolean trackExists = false;
+
+                for(int i = 0; i< tracks.size(); i++){
+                    if(tracks.get(i).startAddress.toLowerCase().equals(startAddresse.getText().toString().toLowerCase()) &&
+                            tracks.get(i).endAddress.toLowerCase().equals((endAddresse.getText().toString().toLowerCase()))){
+                            trackExists = true;
+                    }
+
+                }
+                if(!trackExists){
+                    Track t = new Track(startLat, 1234, endLat, startLng, endLng, null, // TODO calc length
+                            startAddresse.getText().toString(), endAddresse.getText().toString());
+                    tracks.add(t);
+                    updateTracksDatabase(); // Uploads the list of tracks to FireBase including this new track
+                    tryCreatingRoute();
+                } else {
+                    return;
+                }
             }
         });
     }
 
-    /**
-     * TODO: bind to gps service to collect data about current location for the starting position in the next screen
-     */
+    public void queryDataFromFireBase(){
+        databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+        databaseReference.orderByChild("startAddress").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Track track = dataSnapshot.getValue(Track.class);
+                tracks.add(track);
+                System.out.println(tracks.size());
 
 
+
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public void confirmEndAddresse(){
         if(!endAddresse.getText().toString().equals("")){
@@ -135,8 +195,6 @@ public class DefineRouteActivity extends Activity {
                         textView.setText("The addresse could not be found, please try another. Example: Exampleroad 22, 5000");
                         return;
                     }
-
-
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -160,7 +218,6 @@ public class DefineRouteActivity extends Activity {
                 } else {
                     sb.append(strings[i]);
                 }
-
             }
             String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + apiKey + "&location=" + sb.toString() + "," + country;
             StringRequest stringRequestStart = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -197,7 +254,6 @@ public class DefineRouteActivity extends Activity {
                         textView.setText("The addresse could not be found, please try another. Example: Exampleroad 22, 5000");
                         return;
                         }
-
                         startLat = Double.parseDouble(lat);
                         startLng = Double.parseDouble(lng);
 
@@ -225,5 +281,6 @@ public class DefineRouteActivity extends Activity {
     private void updateTracksDatabase(){
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
         databaseReference.setValue(tracks); // Uploading all tracks
+        tracks.clear();
     }
 }
