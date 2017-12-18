@@ -565,38 +565,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
     }
 
-    //not sure we need this but i dont know what the options menu is
-    //TODO: Find out what this does
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.add(0, NEW_MENU_ID, 0, "Google");
-        return true;
-    }
-
-    //still options stuff, not sure what it does
-    //TODO: Find out what this does
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case NEW_MENU_ID:
-                if (start == null || end == null) {
-                    logUser("tap screen to set start and end of route");
-                    break;
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                // get rid of the dialog
-                intent.setClassName("com.google.android.apps.maps",
-                        "com.google.android.maps.MapsActivity");
-                intent.setData(Uri.parse("http://maps.google.com/maps?saddr="
-                        + start.getLatitude() + "," + start.getLongitude() + "&daddr="
-                        + end.getLatitude() + "," + end.getLongitude()));
-                startActivity(intent);
-                break;
-        }
-        return true;
-    }
-
-
     class MapEventsReceiver extends Layer implements GestureListener {
         //makes sure the events are based on the map
         MapEventsReceiver(org.oscim.map.Map map) {

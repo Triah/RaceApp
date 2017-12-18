@@ -101,7 +101,7 @@ public class DefineRouteActivity extends Activity {
 
                 }
                 if(!trackExists){
-                    Track t = new Track(startLat, 1234, endLat, startLng, endLng, null, // TODO calc length
+                    Track t = new Track(startLat, 1234, endLat, startLng, endLng, null,
                             startAddresse.getText().toString(), endAddresse.getText().toString());
                     tracks.add(t);
                     updateTracksDatabase(); // Uploads the list of tracks to FireBase including this new track
@@ -160,9 +160,12 @@ public class DefineRouteActivity extends Activity {
                 } else {
                     sb.append(strings[i]);
                 }
-
             }
-            String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + apiKey + "&location=" + sb.toString() + "," + country;
+            String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" +
+                    apiKey +
+                    "&location=" +
+                    sb.toString() + "," +
+                    country;
             StringRequest stringRequestEnd = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -281,6 +284,5 @@ public class DefineRouteActivity extends Activity {
     private void updateTracksDatabase(){
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
         databaseReference.setValue(tracks); // Uploading all tracks
-        tracks.clear();
     }
 }
