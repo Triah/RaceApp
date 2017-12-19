@@ -145,14 +145,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         setContentView(R.layout.main);
 
         mapView = new MapView(this);
-
-        //setContentView(mapView);
         Intent intentPoints = getIntent();
         startLat = intentPoints.getDoubleExtra("startLat",0);
         startLng = intentPoints.getDoubleExtra("startLng",0);
         endLat = intentPoints.getDoubleExtra("endLat",0);
         endLng = intentPoints.getDoubleExtra("endLng",0);
-
         //the positions for the markers
         startRoutePosition = new GeoPoint(startLat, startLng);
         endRoutePosition = new GeoPoint(endLat,endLng);
@@ -206,19 +203,19 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
          else{
             if(start == null && end == null) {
-            this.runOnUiThread(timerTick);
+            this.runOnUiThread(createRoute);
             }
             if(mBound){
                 if(mBound) {
                     latitude = mService.getLatitude();
                     longitude = mService.getLongitude();
-                    this.runOnUiThread(updateMapCenter);
+                    this.runOnUiThread(updateMap);
                 }
             }
         }
     }
 
-    private Runnable updateMapCenter = new Runnable() {
+    private Runnable updateMap = new Runnable() {
         @Override
         public void run() {
             if(!centered){
@@ -250,7 +247,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     };
 
 
-    private Runnable timerTick = new Runnable() {
+    private Runnable createRoute = new Runnable() {
         @Override
         public void run() {
                 start = startRoutePosition;
@@ -355,7 +352,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service){
-            GpsLocationListener.GetLocationBinder locationService = (GpsLocationListener.GetLocationBinder) service;
+            GpsLocationListener.GetLocationBinder locationService =
+                    (GpsLocationListener.GetLocationBinder) service;
             mService = locationService.getService();
             mBound = true;
         }
@@ -424,7 +422,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //this loads the map based on which file is selected which is defined by the parameter.
-    //TODO: Use an intent to set the starting position and update this continuously
     void loadMap(File areaFolder) {
         logUser("loading map");
 
@@ -445,13 +442,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         // Map position
         mapView.map().setMapPosition(55.39, 10.38 , 1 << 15);
 
-        //here the map is set to the content view, this is a fairly odd way of doing it but it makes sense when using files.
+        //here the map is set to the content view.
         setContentView(mapView);
         loadGraphStorage();
     }
 
-    //i have no clue what this does honestly, but it looks like it tries to create the graph
-    //TODO: Find out what the fuck this does
     void loadGraphStorage() {
         new GHAsyncTask<Void, Void, Path>() {
             protected Path saveDoInBackground(Void... v) throws Exception {
@@ -510,7 +505,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     //calculation of the path, this uses Dijkstra to calculate the path it seems, do not mess with this it should be fine
-    //TODO: Find out if we can cut this down a bit, probably not though -- low priority
     public void calcPath(final double fromLat, final double fromLon,
                          final double toLat, final double toLon) {
 
