@@ -57,7 +57,7 @@ public class MainScreenActivity extends Activity {
                     startActivityForResult(createRoute,0);
                 } else {
                     Intent chooseTrack = new Intent(v.getContext(),ChooseTrackActivity.class);
-                    startActivityForResult(chooseTrack,0); 
+                    startActivityForResult(chooseTrack,0);
                 }
 
             }

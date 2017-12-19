@@ -12,7 +12,8 @@ public class User {
     String password;
     String email;
     int experiencePoints = 0;
-    boolean isCurrentlyRacing;
+    boolean currentlyRacing;
+    Track currentTrack;
 
     int bikeID = R.drawable.bike_1;
 
@@ -33,22 +34,24 @@ public class User {
     public User(){}
 
     // Used to create new user
-    public User(String id, String username, String email, String password, boolean isCurrentlyRacing){
+    public User(String id, String username, String email, String password, boolean currentlyRacing, Track currentTrack){
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.isCurrentlyRacing = isCurrentlyRacing;
+        this.currentlyRacing = currentlyRacing;
+        this.currentTrack = currentTrack;
     }
 
     // Used to load user from database
-    public User(String ID, String username, String email, String password, int experiencePoints, boolean isCurrentlyRacing){
+    public User(String ID, String username, String email, String password, int experiencePoints, boolean currentlyRacing, Track currentTrack){
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.experiencePoints = experiencePoints;
-        this.isCurrentlyRacing = isCurrentlyRacing;
+        this.currentlyRacing = currentlyRacing;
+        this.currentTrack = currentTrack;
     }
 
     public String getId() {
@@ -56,7 +59,7 @@ public class User {
     }
 
     public boolean isCurrentlyRacing() {
-        return isCurrentlyRacing;
+        return currentlyRacing;
     }
 
     public String getUsername() {

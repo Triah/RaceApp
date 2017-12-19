@@ -23,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import static case1.groupg.raceapp.MainActivity.player;
+
 /**
  * Created by Nicolai on 01-12-2017.
  */
@@ -41,6 +43,7 @@ public class DefineRouteActivity extends Activity {
     double endLng;
 
     DatabaseReference databaseReference;
+    DatabaseReference databaseReferenceUser;
 
     RequestQueue queue;
     String apiKey = "G4Y1nT2wA3fhwASVsxORu61nqbQhlCms";
@@ -69,7 +72,7 @@ public class DefineRouteActivity extends Activity {
         textView = (TextView) findViewById(R.id.hintAndErrorView);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("tracks");
-
+        databaseReferenceUser = FirebaseDatabase.getInstance().getReference("users");
 
         confirmAddresse.setEnabled(false);
 
@@ -120,12 +123,6 @@ public class DefineRouteActivity extends Activity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Track track = dataSnapshot.getValue(Track.class);
                 tracks.add(track);
-                System.out.println(tracks.size());
-
-
-
-
-
             }
 
             @Override
@@ -278,6 +275,8 @@ public class DefineRouteActivity extends Activity {
         createRoute.putExtra("startLng", startLng);
         createRoute.putExtra("endLat", endLat);
         createRoute.putExtra("endLng", endLng);
+        createRoute.putExtra("startAddresse", startAddresse.getText().toString());
+        createRoute.putExtra("endAddresse", endAddresse.getText().toString());
         startActivityForResult(createRoute,0);
     }
 

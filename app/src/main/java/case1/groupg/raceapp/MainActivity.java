@@ -36,6 +36,9 @@ import android.view.Window;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.graphhopper.GHRequest;
@@ -93,6 +96,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     boolean centered = false;
     double distanceCurrentAndStart;
     double distanceCurrentAndEnd;
+    ArrayList<Track> trackList = new ArrayList<>();
 
     public GoogleApiClient apiClient;
     private static int LOCATION_PERMISSION = 2;
@@ -110,6 +114,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     public GeoPoint startRoutePosition;
     public GeoPoint endRoutePosition;
     String id;
+    String startAddresse;
+    String endAddresse;
 
     public static User player = null; // The user, who is logged in, and plays the game
     public static ArrayList<Track> tracks = new ArrayList<>();
@@ -145,11 +151,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         setContentView(R.layout.main);
 
         mapView = new MapView(this);
+
+        queryTrackDataFromFireBase();
+
         Intent intentPoints = getIntent();
         startLat = intentPoints.getDoubleExtra("startLat",0);
         startLng = intentPoints.getDoubleExtra("startLng",0);
         endLat = intentPoints.getDoubleExtra("endLat",0);
         endLng = intentPoints.getDoubleExtra("endLng",0);
+        startAddresse = intentPoints.getStringExtra("startAddresse");
+        endAddresse = intentPoints.getStringExtra("endAddresse");
         //the positions for the markers
         startRoutePosition = new GeoPoint(startLat, startLng);
         endRoutePosition = new GeoPoint(endLat,endLng);
@@ -239,8 +250,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
             distanceCurrentAndStart = distanceBetweenSetPointAndCurrent(startLat,startLng,latitude,longitude);
             distanceCurrentAndEnd = distanceBetweenSetPointAndCurrent(endLat,endLng,latitude,longitude);
-
-            if(distanceCurrentAndStart < 100.00 && !isRacing){
+            System.out.println(player.currentlyRacing);
+            //this boolean is not updating
+            if(distanceCurrentAndStart < 100.00 && !player.currentlyRacing && !isRacing){
                 logUser("You are close enough to begin the race, press and hold on the screen to begin race");
             }
         }
@@ -576,40 +588,72 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     private boolean onLongPress(GeoPoint p) {
-        String idString = "" + startLat + startLng + endLat + endLng + player.getUsername();
-        final String id = idString.replace(".", "");
         final User user = player;
-        TrackTime trackTime = new TrackTime(id,0,0,user);
-        if(trackTimeDatabaseReference.child(id) == null){
-            trackTimeDatabaseReference.child(id).setValue(trackTime);
-        }
-
-        System.out.println(id);
         if(startLat != 0 &&
                 startLng != 0 &&
                 latitude != 0 &&
                 longitude != 0){
-            if(distanceCurrentAndStart < 100.00 && !isRacing){
-                //set player.iscurrentlyracing to true
+            System.out.println(player.isCurrentlyRacing());
+            if(distanceCurrentAndStart < 100.00 && !player.isCurrentlyRacing()){
+                System.out.println(trackList.size());
+                for(Track t : trackList){
+                    if(t.startAddress.equals(startAddresse) && t.endAddress.equals(endAddresse)){
+                        System.out.println(player.getId() + "THIS IS IN THE CONDITION");
+                        usersTableDatabaseReference.child(player.getId()).child("currentTrack").setValue(t);
+                        usersTableDatabaseReference.child(player.getId()).child("currentlyRacing").setValue(true);
+                        System.out.println(usersTableDatabaseReference.child(player.getId()).child("currentlyRacing"));
+                        System.out.println(player.isCurrentlyRacing());
+                    }
+                }
+
                 logUser("The race has begun! Have fun! Take care of yourself");
                 //create intent to start watch!
                 startTime = System.currentTimeMillis();
                 isRacing = true;
-                trackTimeDatabaseReference.child(id).child("startTime").setValue(startTime);
                 return true;
             }
-            if(distanceCurrentAndEnd < 100 && isRacing){
-                //set player.iscurrentlyracing to false
-                //stop timer and get time since start in milliseconds
+            if(distanceCurrentAndEnd < 100 && player.isCurrentlyRacing()){
+                usersTableDatabaseReference.child(player.getId()).child("currentTrack").setValue(null);
+                usersTableDatabaseReference.child(player.getId()).child("currentlyRacing").setValue(false);
                 endTime = System.currentTimeMillis();
-                trackTimeDatabaseReference.child(id).child("endTime").setValue(endTime);
                 long time =  endTime - startTime;
                 long seconds = (int) (time/1000) % 60;
                 logUser("Your time was recorded to be: " + seconds + " seconds");
-                isRacing = false;
+                isRacing=false;
                 return true;
             }
         }
         return true;
+    }
+
+    public void queryTrackDataFromFireBase(){
+        trackTimeDatabaseReference = FirebaseDatabase.getInstance().getReference("tracks");
+        trackTimeDatabaseReference.orderByChild("startAddress").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Track track = dataSnapshot.getValue(Track.class);
+                trackList.add(track);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -60,7 +60,7 @@ public class RegisterUserActivity extends Activity {
                         !registerEmail.getText().toString().equals("")){ // Valid registration fields
                     final String userID = UUID.randomUUID().toString();
                     final User newUser = new User(userID, registerUsername.getText().toString(),
-                            registerEmail.getText().toString(), registerPassword.getText().toString(), false);
+                            registerEmail.getText().toString(), registerPassword.getText().toString(), false, null);
 
                     // Checking if user already exists or not
                     queryDataFromFireBase();
@@ -82,8 +82,6 @@ public class RegisterUserActivity extends Activity {
                         startActivityForResult(login, 0);
                     }
 
-                    //going to add more rules here, i have done this before so i have a pretty good idea of how to cover all bases
-                    // -Nicolai
                 } else if(registerUsername.getText().toString().equals("")){
                     registerErrorMessage.setText("Please specify a username and try again!");
                 } else if(registerEmail.getText().toString().equals("")){

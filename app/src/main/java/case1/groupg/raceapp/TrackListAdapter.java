@@ -51,6 +51,8 @@ public class TrackListAdapter extends RecyclerView.Adapter {
                     createRoute.putExtra("startLng", tracks.get(position).getLongitudeStart());
                     createRoute.putExtra("endLat", tracks.get(position).getLatitudeEnd());
                     createRoute.putExtra("endLng", tracks.get(position).getLongitudeEnd());
+                    createRoute.putExtra("startAddresse", tracks.get(position).getStartAddress());
+                    createRoute.putExtra("endAddresse", tracks.get(position).getEndAddress());
                     view.getContext().startActivity(createRoute);
                 }
             });
