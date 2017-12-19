@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import static case1.groupg.raceapp.MainActivity.player;
+
 /**
  * Created by Nicolai on 29-11-2017.
  */
@@ -44,8 +46,20 @@ public class MainScreenActivity extends Activity {
         trackChooser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent chooseTrack = new Intent(v.getContext(),ChooseTrackActivity.class);
-                startActivityForResult(chooseTrack,0);
+                if(player.currentlyRacing){
+                    Intent createRoute = new Intent(v.getContext(), MainActivity.class);
+                    createRoute.putExtra("startLat", player.currentTrack.getLatitudeStart());
+                    createRoute.putExtra("startLng", player.currentTrack.getLongitudeStart());
+                    createRoute.putExtra("endLat", player.currentTrack.getLatitudeEnd());
+                    createRoute.putExtra("endLng", player.currentTrack.getLongitudeEnd());
+                    createRoute.putExtra("startAddresse", player.currentTrack.getStartAddress());
+                    createRoute.putExtra("endAddresse", player.currentTrack.getEndAddress());
+                    startActivityForResult(createRoute,0);
+                } else {
+                    Intent chooseTrack = new Intent(v.getContext(),ChooseTrackActivity.class);
+                    startActivityForResult(chooseTrack,0); 
+                }
+
             }
         });
 
