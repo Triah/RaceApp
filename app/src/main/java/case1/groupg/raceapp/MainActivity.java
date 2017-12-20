@@ -116,6 +116,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     String id;
     String startAddresse;
     String endAddresse;
+    double length;
 
     public static User player = null; // The user, who is logged in, and plays the game
     public static ArrayList<Track> tracks = new ArrayList<>();
@@ -548,6 +549,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     pathLayer = createPathLayer(resp);
                     mapView.map().layers().add(pathLayer);
                     mapView.map().updateMap(true);
+                    length = resp.getDistance();
                 } else {
                     logUser("Error:" + resp.getErrors());
                 }
@@ -616,9 +618,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 usersTableDatabaseReference.child(player.getId()).child("currentTrack").setValue(null);
                 usersTableDatabaseReference.child(player.getId()).child("currentlyRacing").setValue(false);
                 endTime = System.currentTimeMillis();
+                double xp = 0;
+                if(length != 0){
+                    xp = length/100;
+                }
+                double totalXp = xp + player.getExperiencePoints();
+                usersTableDatabaseReference.child(player.getId()).child("experiencePoints").setValue(totalXp);
                 long time =  endTime - startTime;
                 long seconds = (int) (time/1000) % 60;
-                logUser("Your time was recorded to be: " + seconds + " seconds");
+                logUser("Your time was recorded to be: " + seconds + " seconds and you have earned " + xp + " experience points" );
                 isRacing=false;
                 return true;
             }
